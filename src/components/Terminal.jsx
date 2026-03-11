@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { Terminal as XTerm } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
+import { WebLinksAddon } from '@xterm/addon-web-links';
 import { FileSystem } from '../core/fileSystem';
 import { CommandParser } from '../core/commandParser';
 import 'xterm/css/xterm.css';
 import profileData from '../data/profile.json';
+import { ASCII_BANNER } from '../data/banner';
 
 const BOOT_SEQUENCE = [
   { text: 'Booting neko.OS...', delay: 100 },
@@ -18,36 +20,27 @@ const BOOT_SEQUENCE = [
   { text: '', delay: 100 },
 ];
 
-const ASCII_BANNER = `
- _   _      _         _____ _____ 
-| \\ | |    | |       |  _  /  ___|
-|  \\| | ___| | _____ | |/' / /__ _
-| . ' |/ _ \\ |/ / _ \\|  /| | '_ \\|
-| |\\  |  __/   < (_) \\  \\| | |_) |
-\\_| \\_/\\___|_|\\_\\___/ \\__/\\_/\\___(_)
-
-  Developer Portfolio Terminal v1.0.0
-  Type 'help' to get started
-`;
-
 const WELCOME_MESSAGE = `Welcome to neko.OS!
-
-Type 'help' to see available commands.
 Type 'about' to learn more about me.
 `;
 
-export default function Terminal() {
+export default function Terminal({ onOpenWindow }) {
   const terminalRef = useRef(null);
   const xtermRef = useRef(null);
   const fitAddonRef = useRef(null);
   const fileSystemRef = useRef(null);
   const commandParserRef = useRef(null);
-  const [isBooted, setIsBooted] = useState(false);
+  const isBootedRef = useRef(false);
   
   const currentLineRef = useRef('');
   const cursorPosRef = useRef(0);
 
   useEffect(() => {
+    const timeoutIds = [];
+    const schedule = (fn, delay) => {
+      const id = window.setTimeout(fn, delay);
+      timeoutIds.push(id);
+    };
     if (!terminalRef.current) return;
 
     // Initialize xterm
@@ -55,7 +48,7 @@ export default function Terminal() {
       cursorBlink: true,
       cursorStyle: 'block',
       fontFamily: '"Fira Code", Consolas, Monaco, monospace',
-      fontSize: 12,
+      fontSize: 13,
       theme: {
         background: '#0a0e14',
         foreground: '#00ff41',
@@ -83,6 +76,12 @@ export default function Terminal() {
 
     const fitAddon = new FitAddon();
     term.loadAddon(fitAddon);
+    term.loadAddon(
+      new WebLinksAddon((event, uri) => {
+        event.preventDefault();
+        window.open(uri, '_blank', 'noopener,noreferrer');
+      })
+    );
     term.open(terminalRef.current);
     fitAddon.fit();
 
@@ -97,23 +96,40 @@ export default function Terminal() {
         term.clear();
         return;
       }
-      term.writeln(text);
+
+      String(text)
+        .split('\n')
+        .forEach((line) => term.writeln(line));
     };
 
     commandParserRef.current = new CommandParser(
       fileSystemRef.current,
       outputHandler,
-      null
+      {
+        openWindow: onOpenWindow,
+        openUrl: (url) => window.open(url, '_blank', 'noopener,noreferrer'),
+      }
     );
 
     // Boot sequence
     let bootIndex = 0;
+    const writePrompt = (newLine = true) => {
+      const path = fileSystemRef.current.getPromptPath();
+      term.write(`${newLine ? '\r\n' : '\r'}\x1b[32m${profileData.username}@neko\x1b[0m:\x1b[34m${path}\x1b[0m$ `);
+    };
+
+    const renderInputLine = () => {
+      term.write('\r\x1b[K');
+      writePrompt(false);
+      term.write(currentLineRef.current);
+    };
+
     const runBootSequence = () => {
       if (bootIndex < BOOT_SEQUENCE.length) {
         const { text, delay } = BOOT_SEQUENCE[bootIndex];
-        setTimeout(() => {
+        schedule(() => {
           if (text) {
-            term.writeln(`\x1b[36m${text}\x1b[0m`);
+            term.writeln(`\x1b[33m${text}\x1b[0m`);
           } else {
             term.writeln('');
           }
@@ -122,25 +138,22 @@ export default function Terminal() {
         }, delay);
       } else {
         // Show banner and welcome
-        setTimeout(() => {
-          term.writeln(`\x1b[36m${ASCII_BANNER}\x1b[0m`);
+        schedule(() => {
+          ASCII_BANNER.split('\n').forEach((line) => {
+            term.writeln(`\x1b[36m${line}\x1b[0m`);
+          });
           term.writeln(WELCOME_MESSAGE);
-          setIsBooted(true);
-          writePrompt();
+          isBootedRef.current = true;
+          writePrompt(false);
         }, 300);
       }
     };
 
     runBootSequence();
 
-    const writePrompt = () => {
-      const path = fileSystemRef.current.getPromptPath();
-      term.write(`\r\n\x1b[32m${profileData.username}@neko\x1b[0m:\x1b[34m${path}\x1b[0m$ `);
-    };
-
     // Handle input
     term.onData((data) => {
-      if (!isBooted && bootIndex < BOOT_SEQUENCE.length) return;
+      if (!isBootedRef.current && bootIndex < BOOT_SEQUENCE.length) return;
 
       const code = data.charCodeAt(0);
 
@@ -152,11 +165,19 @@ export default function Terminal() {
         }
         currentLineRef.current = '';
         cursorPosRef.current = 0;
-        writePrompt();
+        writePrompt(true);
+      } else if (code === 9) { // Tab
+        const autocompleted = commandParserRef.current.autocomplete(currentLineRef.current);
+        if (autocompleted !== currentLineRef.current) {
+          currentLineRef.current = autocompleted;
+          cursorPosRef.current = autocompleted.length;
+          renderInputLine();
+        } else {
+          term.write('\x07');
+        }
       } else if (code === 127) { // Backspace
         if (cursorPosRef.current > 0) {
-          currentLineRef.current = 
-            currentLineRef.current.slice(0, -1);
+          currentLineRef.current = currentLineRef.current.slice(0, -1);
           cursorPosRef.current--;
           term.write('\b \b');
         }
@@ -165,21 +186,15 @@ export default function Terminal() {
         if (data === '\x1b[A') { // Up arrow
           const prevCmd = commandParserRef.current.getPreviousCommand();
           if (prevCmd !== null) {
-            // Clear current line
-            term.write('\r\x1b[K');
-            writePrompt();
-            term.write(prevCmd);
             currentLineRef.current = prevCmd;
             cursorPosRef.current = prevCmd.length;
+            renderInputLine();
           }
         } else if (data === '\x1b[B') { // Down arrow
           const nextCmd = commandParserRef.current.getNextCommand();
-          // Clear current line
-          term.write('\r\x1b[K');
-          writePrompt();
-          term.write(nextCmd);
           currentLineRef.current = nextCmd;
           cursorPosRef.current = nextCmd.length;
+          renderInputLine();
         }
       } else if (code >= 32) { // Printable characters
         currentLineRef.current += data;
@@ -197,16 +212,17 @@ export default function Terminal() {
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      timeoutIds.forEach((id) => window.clearTimeout(id));
       term.dispose();
     };
-  }, [isBooted]);
+  }, [onOpenWindow]);
 
   return (
-    <div className="w-full h-full p-4 overflow-hidden">
+    <div className="w-full h-full pt-5 pr-5 pb-5 pl-4 overflow-hidden">
       <div 
         ref={terminalRef} 
         className="w-full h-full"
-        style={{ minHeight: '400px' }}
+        style={{ minHeight: '430px' }}
       />
     </div>
   );

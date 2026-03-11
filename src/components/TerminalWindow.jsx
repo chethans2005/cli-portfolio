@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import Terminal from './Terminal';
 
-export default function TerminalWindow() {
+export default function TerminalWindow({ onOpenWindow }) {
   const MotionDiv = motion.div;
   
   return (
@@ -9,10 +9,10 @@ export default function TerminalWindow() {
       initial={{ opacity: 0, scale: 0.9, y: 20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="w-11/12 max-w-4xl h-96 mx-auto"
+      className="w-2/3 min-w-[24rem] h-[30rem] sm:h-[33rem] mx-auto"
     >
       {/* Terminal Window */}
-      <div className="relative w-full h-full rounded-xl overflow-hidden shadow-2xl border border-terminal-cyan/30"
+      <div className="relative w-full h-full rounded-xl overflow-hidden shadow-2xl border border-terminal-cyan/30 p-3"
            style={{
              background: 'rgba(10, 14, 20, 0.85)',
              backdropFilter: 'blur(10px)',
@@ -42,12 +42,18 @@ export default function TerminalWindow() {
           </div>
 
           {/* Empty space for balance */}
-          <div className="w-20"></div>
+          <div className="w-20 flex items-center justify-center">
+            <span className="text-terminal-purple font-mono text-sm font-semibold tracking-wider">
+              neko.OS
+            </span>
+          </div>
         </div>
 
         {/* Terminal Content */}
-        <div className="w-full h-[calc(100%-49px)]">
-          <Terminal />
+        <div className="w-full h-[calc(100%-49px)] p-3">
+          <div className="w-full h-full rounded-lg border border-terminal-cyan/20 bg-black/35">
+            <Terminal onOpenWindow={onOpenWindow} />
+          </div>
         </div>
 
         {/* Glow effect */}

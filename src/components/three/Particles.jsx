@@ -1,102 +1,139 @@
-import { useRef, useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-function generateRandomParticles(count) {
-  const temp = [];
-  for (let i = 0; i < count; i++) {
-    const x = (Math.random() - 0.5) * 50;
-    const y = (Math.random() - 0.5) * 50;
-    const z = (Math.random() - 0.5) * 50;
-    temp.push({ x, y, z });
-  }
-  return temp;
+function randomRange(min, max) {
+  return min + Math.random() * (max - min);
 }
 
-export function FloatingParticles({ count = 300 }) {
-  const meshRef = useRef();
-  
-  const particles = useMemo(() => generateRandomParticles(count), [count]);
+function createDriftData(count, spread, speedRange, brightnessRange) {
+  const positions = new Float32Array(count * 3);
+  const velocities = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+  const targetAngleDeg = 30;
 
-  const particlePositions = useMemo(() => {
-    const positions = new Float32Array(count * 3);
-    particles.forEach((particle, i) => {
-      positions[i * 3] = particle.x;
-      positions[i * 3 + 1] = particle.y;
-      positions[i * 3 + 2] = particle.z;
-    });
-    return positions;
-  }, [particles, count]);
+  for (let i = 0; i < count; i++) {
+    const index = i * 3;
 
-  useFrame((state) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y = state.clock.getElapsedTime() * 0.05;
-      meshRef.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.1) * 0.1;
+    positions[index] = randomRange(-spread, spread);
+    positions[index + 1] = randomRange(-spread, spread);
+    positions[index + 2] = randomRange(-spread, spread);
+
+    const angle = THREE.MathUtils.degToRad(targetAngleDeg + randomRange(-6, 6));
+    const speed = randomRange(speedRange[0] * 0.8, speedRange[0] * 1.2);
+
+    velocities[index] = Math.cos(angle) * speed;
+    velocities[index + 1] = Math.sin(angle) * speed;
+    velocities[index + 2] = randomRange(-speedRange[2] * 0.15, speedRange[2] * 0.15);
+
+    const brightness = randomRange(brightnessRange[0], brightnessRange[1]);
+    colors[index] = brightness;
+    colors[index + 1] = brightness;
+    colors[index + 2] = brightness;
+  }
+
+  return { positions, velocities, colors };
+}
+
+function DriftLayer({ count, spread, size, speedRange, brightnessRange, opacity }) {
+  const pointsRef = useRef(null);
+  const { positions, velocities, colors } = useMemo(
+    () => createDriftData(count, spread, speedRange, brightnessRange),
+    [count, spread, speedRange, brightnessRange]
+  );
+  const circleTexture = useMemo(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 64;
+    canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      return null;
     }
+
+    const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+    gradient.addColorStop(0.6, 'rgba(255, 255, 255, 0.95)');
+    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 64, 64);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.needsUpdate = true;
+    return texture;
+  }, []);
+
+  useFrame((_, delta) => {
+    if (!pointsRef.current) {
+      return;
+    }
+
+    const positionAttr = pointsRef.current.geometry.attributes.position;
+    const scaledDelta = delta * 60;
+
+    for (let i = 0; i < count; i++) {
+      const index = i * 3;
+      positionAttr.array[index] += velocities[index] * scaledDelta;
+      positionAttr.array[index + 1] += velocities[index + 1] * scaledDelta;
+      positionAttr.array[index + 2] += velocities[index + 2] * scaledDelta;
+
+      if (positionAttr.array[index] > spread) positionAttr.array[index] = -spread;
+      if (positionAttr.array[index] < -spread) positionAttr.array[index] = spread;
+      if (positionAttr.array[index + 1] > spread) positionAttr.array[index + 1] = -spread;
+      if (positionAttr.array[index + 1] < -spread) positionAttr.array[index + 1] = spread;
+      if (positionAttr.array[index + 2] > spread) positionAttr.array[index + 2] = -spread;
+      if (positionAttr.array[index + 2] < -spread) positionAttr.array[index + 2] = spread;
+    }
+
+    positionAttr.needsUpdate = true;
   });
 
   return (
-    <points ref={meshRef}>
+    <points ref={pointsRef} frustumCulled={false}>
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
           count={count}
-          array={particlePositions}
+          array={positions}
           itemSize={3}
         />
+        <bufferAttribute attach="attributes-color" count={count} array={colors} itemSize={3} />
       </bufferGeometry>
       <pointsMaterial
-        size={0.15}
-        color="#00ff41"
+        size={size}
+        color="#ffffff"
+        vertexColors
+        map={circleTexture}
+        alphaMap={circleTexture}
         transparent
-        opacity={0.8}
+        opacity={opacity}
+        alphaTest={0.08}
         sizeAttenuation
-        blending={THREE.AdditiveBlending}
+        depthWrite={false}
+        blending={THREE.NormalBlending}
       />
     </points>
   );
 }
 
-export function AtomStructure() {
-  const groupRef = useRef();
-
-  useFrame((state) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.1;
-      groupRef.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.05) * 0.2;
-    }
-  });
-
+export function StarfieldParticles() {
   return (
-    <group ref={groupRef}>
-      {/* Orbital rings */}
-      {[0, 60, 120].map((angle, i) => (
-        <mesh key={i} rotation={[0, 0, (angle * Math.PI) / 180]}>
-          <torusGeometry args={[3, 0.02, 16, 100]} />
-          <meshBasicMaterial color="#00ffff" transparent opacity={0.3} />
-        </mesh>
-      ))}
-      
-      {/* Center sphere */}
-      <mesh>
-        <sphereGeometry args={[0.3, 32, 32]} />
-        <meshBasicMaterial color="#00ff41" />
-      </mesh>
-
-      {/* Orbiting particles */}
-      {[0, 120, 240].map((angle, i) => (
-        <mesh
-          key={`particle-${i}`}
-          position={[
-            Math.cos((angle * Math.PI) / 180) * 3,
-            0,
-            Math.sin((angle * Math.PI) / 180) * 3,
-          ]}
-        >
-          <sphereGeometry args={[0.1, 16, 16]} />
-          <meshBasicMaterial color="#bd93f9" />
-        </mesh>
-      ))}
-    </group>
+    <>
+      <DriftLayer
+        count={1540}
+        spread={24}
+        size={0.085}
+        speedRange={[0.0252, 0.0248, 0.0242]}
+        brightnessRange={[0.45, 1]}
+        opacity={0.92}
+      />
+      <DriftLayer
+        count={1450}
+        spread={20}
+        size={0.16}
+        speedRange={[0.0285, 0.0278, 0.0268]}
+        brightnessRange={[0.62, 1]}
+        opacity={0.85}
+      />
+    </>
   );
 }
