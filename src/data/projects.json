@@ -1,0 +1,42 @@
+[
+  {
+    "id": "dhcp-server",
+    "name": "DHCP Server",
+    "description": "High-performance DHCP server implementation in Go with support for dynamic IP allocation and lease management.",
+    "technologies": ["Go", "Networking", "TCP/IP"],
+    "github": "https://github.com/chethan/dhcp-server",
+    "deployed": false,
+    "demoUrl": null,
+    "status": "active"
+  },
+  {
+    "id": "redis-cache",
+    "name": "Redis Cache System",
+    "description": "Distributed caching layer with Redis cluster support, automatic failover, and monitoring dashboard.",
+    "technologies": ["Redis", "Node.js", "Docker"],
+    "github": "https://github.com/chethan/redis-cache",
+    "deployed": false,
+    "demoUrl": null,
+    "status": "active"
+  },
+  {
+    "id": "ai-tutor",
+    "name": "AI Tutor Platform",
+    "description": "Interactive AI-powered learning platform with personalized study paths and real-time code analysis.",
+    "technologies": ["React", "Python", "OpenAI", "FastAPI"],
+    "github": "https://github.com/chethan/ai-tutor",
+    "deployed": true,
+    "demoUrl": "https://ai-tutor.demo.com",
+    "status": "active"
+  },
+  {
+    "id": "console-portfolio",
+    "name": "Console Portfolio",
+    "description": "The portfolio you're viewing right now! An immersive terminal-based experience built with React and Three.js.",
+    "technologies": ["React", "Three.js", "xterm.js", "Framer Motion"],
+    "github": "https://github.com/chethan/console-portfolio",
+    "deployed": true,
+    "demoUrl": "https://neko.dev",
+    "status": "active"
+  }
+]

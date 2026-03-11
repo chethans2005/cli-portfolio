@@ -1,0 +1,38 @@
+{
+  "languages": [
+    "JavaScript/TypeScript",
+    "Python",
+    "Go",
+    "Java",
+    "Rust"
+  ],
+  "frontend": [
+    "React",
+    "Next.js",
+    "Vue.js",
+    "Tailwind CSS",
+    "Framer Motion"
+  ],
+  "backend": [
+    "Node.js",
+    "Express",
+    "FastAPI",
+    "Django",
+    "PostgreSQL",
+    "MongoDB"
+  ],
+  "devops": [
+    "Docker",
+    "Kubernetes",
+    "AWS",
+    "CI/CD",
+    "Nginx"
+  ],
+  "tools": [
+    "Git",
+    "Linux",
+    "VS Code",
+    "Postman",
+    "Redis"
+  ]
+}
