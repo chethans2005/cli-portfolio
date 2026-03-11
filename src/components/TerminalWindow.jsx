@@ -9,7 +9,7 @@ export default function TerminalWindow() {
       initial={{ opacity: 0, scale: 0.9, y: 20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="w-full max-w-5xl h-[600px] mx-auto"
+      className="w-11/12 max-w-4xl h-96 mx-auto"
     >
       {/* Terminal Window */}
       <div className="relative w-full h-full rounded-xl overflow-hidden shadow-2xl border border-terminal-cyan/30"

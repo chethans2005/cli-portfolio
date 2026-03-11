@@ -8,37 +8,32 @@ import profileData from '../data/profile.json';
 
 const BOOT_SEQUENCE = [
   { text: 'Booting neko.OS...', delay: 100 },
-  { text: '[✓] Loading kernel modules...', delay: 150 },
-  { text: '[✓] Initializing file system...', delay: 150 },
-  { text: '[✓] Starting network services...', delay: 150 },
-  { text: '[✓] Loading developer modules...', delay: 150 },
-  { text: '[✓] Initializing environment...', delay: 200 },
+  { text: '[OK] Loading kernel modules...', delay: 150 },
+  { text: '[OK] Initializing file system...', delay: 150 },
+  { text: '[OK] Starting network services...', delay: 150 },
+  { text: '[OK] Loading developer modules...', delay: 150 },
+  { text: '[OK] Initializing environment...', delay: 200 },
   { text: '', delay: 100 },
   { text: 'System ready.', delay: 300 },
   { text: '', delay: 100 },
 ];
 
 const ASCII_BANNER = `
-╔═══════════════════════════════════════════════════════════╗
-║                                                           ║
-║   ███╗   ██╗███████╗██╗  ██╗ ██████╗     ██████╗ ███████╗║
-║   ████╗  ██║██╔════╝██║ ██╔╝██╔═══██╗   ██╔═══██╗██╔════╝║
-║   ██╔██╗ ██║█████╗  █████╔╝ ██║   ██║   ██║   ██║███████╗║
-║   ██║╚██╗██║██╔══╝  ██╔═██╗ ██║   ██║   ██║   ██║╚════██║║
-║   ██║ ╚████║███████╗██║  ██╗╚██████╔╝██╗╚██████╔╝███████║║
-║   ╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝ ╚═════╝ ╚══════╝║
-║                                                           ║
-║          Developer Portfolio Terminal v1.0.0             ║
-║                                                           ║
-╚═══════════════════════════════════════════════════════════╝
+ _   _      _         _____ _____ 
+| \\ | |    | |       |  _  /  ___|
+|  \\| | ___| | _____ | |/' / /__ _
+| . ' |/ _ \\ |/ / _ \\|  /| | '_ \\|
+| |\\  |  __/   < (_) \\  \\| | |_) |
+\\_| \\_/\\___|_|\\_\\___/ \\__/\\_/\\___(_)
+
+  Developer Portfolio Terminal v1.0.0
+  Type 'help' to get started
 `;
 
-const WELCOME_MESSAGE = `
-Welcome to neko.OS! 👋
+const WELCOME_MESSAGE = `Welcome to neko.OS!
 
 Type 'help' to see available commands.
 Type 'about' to learn more about me.
-
 `;
 
 export default function Terminal() {
@@ -60,7 +55,7 @@ export default function Terminal() {
       cursorBlink: true,
       cursorStyle: 'block',
       fontFamily: '"Fira Code", Consolas, Monaco, monospace',
-      fontSize: 14,
+      fontSize: 12,
       theme: {
         background: '#0a0e14',
         foreground: '#00ff41',
