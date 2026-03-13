@@ -1,26 +1,26 @@
 [ 
   {
-    "name": "dhcp-server",
-    "repo": "chethan/dhcp-server",
+    "name": "langbuddy",
+    "repo": "chethans2005/LangBuddy",
     "deployed": false,
     "demo": ""
   },
   {
-    "name": "redis-cache",
-    "repo": "chethan/redis-cache",
+    "name": "neko-matic",
+    "repo": "chethans2005/neko-matic",
     "deployed": false,
     "demo": ""
   },
   {
-    "name": "ai-tutor",
-    "repo": "chethan/ai-tutor",
+    "name": "neko.ai",
+    "repo": "chethans2005/neko.ai",
     "deployed": true,
-    "demo": "https://ai-tutor.demo.com"
+    "demo": "https://neko-ai-seven.vercel.app/"
   },
   {
-    "name": "console-portfolio",
-    "repo": "chethan/console-portfolio",
-    "deployed": true,
-    "demo": "https://neko.dev"
+    "name": "cli-portfolio",
+    "repo": "chethans2005/cli-portfolio",
+    "deployed": false,
+    "demo": ""
   }
 ]

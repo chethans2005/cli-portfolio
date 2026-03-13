@@ -1,17 +1,35 @@
 {
-  "name": "Chethan",
+  "name": "Chethan S",
   "username": "chethan",
   "title": "Full Stack Developer",
-  "bio": "Passionate about building elegant solutions to complex problems. Specializing in distributed systems, backend architecture, and developer tools.",
+  "role": "Developer",
+  "status": "Active",
+  "systemId": "neko-user-01",
+  "bio": "Passionate about building elegant solutions to complex problems. Specializing in distributed systems, AI architecture, and developer tools.",
   "interests": [
     "systems programming",
     "AI",
     "networking",
     "full stack"
   ],
+  "domains": [
+    "Systems Programming",
+    "Artificial Intelligence",
+    "Networking",
+    "Full Stack Development"
+  ],
+  "skills": [
+    { "name": "Python", "level": 90 },
+    { "name": "JavaScript", "level": 80 },
+    { "name": "C", "level": 70 },
+    { "name": "React", "level": 80 }
+  ],
+  "projects": 10,
+  "languages": "Python / JS / C",
+  "clearance": "OPEN SOURCE",
+  "systemStatus": "ACTIVE",
   "location": "~/dev/world",
-  "email": "chethan@neko.dev",
-  "github": "https://github.com/chethan",
-  "linkedin": "https://linkedin.com/in/chethan",
-  "twitter": "https://twitter.com/chethan"
+  "email": "chetansoyal@gmail.com",
+  "github": "https://github.com/chethans2005",
+  "linkedin": "https://www.linkedin.com/in/chethan-s1122/"
 }
