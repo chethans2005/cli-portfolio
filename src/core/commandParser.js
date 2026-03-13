@@ -1,5 +1,4 @@
 import projectsData from '../data/projects.json';
-import skillsData from '../data/skills.json';
 import profileData from '../data/profile.json';
 
 const C = {
@@ -15,12 +14,28 @@ const C = {
 };
 
 export class CommandParser {
-  constructor(fileSystem, outputHandler, windowManager) {
+  constructor(fileSystem, outputHandler, handlers = {}) {
     this.fs = fileSystem;
     this.output = outputHandler;
-    this.windowManager = windowManager;
+    this.handlers = handlers;
     this.commandHistory = [];
     this.historyIndex = -1;
+    this.availableCommands = [
+      'help',
+      'about',
+      'skills',
+      'projects',
+      'contact',
+      'clear',
+      'ls',
+      'cd',
+      'run',
+      'github',
+      'whoami',
+      'pwd',
+      'echo',
+      'neofetch',
+    ];
   }
 
   executeCommand(input) {
@@ -75,83 +90,29 @@ export class CommandParser {
   ${C.GREEN}whoami${C.RESET}      - Display current user
   ${C.GREEN}neofetch${C.RESET}    - System information
 
-${C.MAGENTA}Pro tip:${C.RESET} Use ${C.CYAN}cd projects${C.RESET} then ${C.CYAN}ls${C.RESET} to explore my work!`);
+${C.MAGENTA}Pro tip:${C.RESET} Use ${C.CYAN}cd projects${C.RESET} then ${C.CYAN}ls${C.RESET} to explore my work.`);
   }
 
   about() {
-    this.output(`${C.BRIGHT_CYAN}╔════════════════════════════════════════════════════╗${C.RESET}
-${C.BRIGHT_CYAN}║               ABOUT ${profileData.name.toUpperCase()}                        ║${C.RESET}
-${C.BRIGHT_CYAN}╚════════════════════════════════════════════════════╝${C.RESET}
-
-${C.GREEN}Name:${C.RESET}     ${profileData.name}
-${C.GREEN}Role:${C.RESET}     ${profileData.title}
-${C.GREEN}Location:${C.RESET} ${profileData.location}
-
-${C.MAGENTA}About Me:${C.RESET}
-${profileData.bio}
-
-${C.YELLOW}Links:${C.RESET}
-  GitHub:   ${profileData.github}
-  LinkedIn: ${profileData.linkedin}
-  Twitter:  ${profileData.twitter}`);
+    this.handlers.openWindow?.('about');
+    this.output(`${C.BRIGHT_CYAN}Opened about window.${C.RESET}`);
   }
 
   skills() {
-    this.output(`${C.BRIGHT_CYAN}╔════════════════════════════════════════════════════╗${C.RESET}
-${C.BRIGHT_CYAN}║              TECHNICAL SKILLS                      ║${C.RESET}
-${C.BRIGHT_CYAN}╚════════════════════════════════════════════════════╝${C.RESET}
-
-${C.GREEN}Languages:${C.RESET}
-  ${skillsData.languages.join(' | ')}
-
-${C.MAGENTA}Frontend:${C.RESET}
-  ${skillsData.frontend.join(' | ')}
-
-${C.YELLOW}Backend:${C.RESET}
-  ${skillsData.backend.join(' | ')}
-
-${C.RED}DevOps:${C.RESET}
-  ${skillsData.devops.join(' | ')}
-
-${C.BRIGHT_CYAN}Tools:${C.RESET}
-  ${skillsData.tools.join(' | ')}`);
+    this.handlers.openWindow?.('skills');
+    this.output(`${C.BRIGHT_CYAN}Opened skills window.${C.RESET}`);
   }
 
   projects() {
-    if (this.fs.getCurrentPath().includes('projects')) {
-      const result = this.fs.listDirectory('.');
-      if (result.success) {
-        this.output(`${C.GREEN}Projects in this directory:${C.RESET}
-${result.items.map(item => `  [DIR] ${item.name}`).join('\n')}
-
-${C.MAGENTA}Tip:${C.RESET} Use ${C.CYAN}'run [project-name]'${C.RESET} to view demo
-     Use ${C.CYAN}'github [project-name]'${C.RESET} to view source`);
-      }
-    } else {
-      this.output(`${C.BRIGHT_CYAN}╔════════════════════════════════════════════════════╗${C.RESET}
-${C.BRIGHT_CYAN}║                MY PROJECTS                         ║${C.RESET}
-${C.BRIGHT_CYAN}╚════════════════════════════════════════════════════╝${C.RESET}
-
-${projectsData.map((proj, idx) => `${C.GREEN}${idx + 1}. ${proj.name}${C.RESET}
-   ${proj.description}
-   ${C.BRIGHT_CYAN}Tech:${C.RESET} ${proj.technologies.join(', ')}
-   ${C.MAGENTA}Status:${C.RESET} ${proj.deployed ? '[DEPLOYED]' : '[IN DEVELOPMENT]'}`).join('\n\n')}
-
-${C.YELLOW}Navigate to projects:${C.RESET} ${C.CYAN}cd projects${C.RESET}`);
-    }
+    this.output(`${C.BRIGHT_CYAN}Project workspace:${C.RESET} ${C.CYAN}cd projects${C.RESET}`);
+    this.output(`${C.BRIGHT_CYAN}Then list:${C.RESET} ${C.CYAN}ls${C.RESET}`);
+    this.output(`${C.BRIGHT_CYAN}Open repo:${C.RESET} ${C.CYAN}github <project-name>${C.RESET}`);
+    this.output(`${C.BRIGHT_CYAN}Run demo:${C.RESET} ${C.CYAN}run <project-name>${C.RESET}`);
   }
 
   contact() {
-    this.output(`${C.BRIGHT_CYAN}╔════════════════════════════════════════════════════╗${C.RESET}
-${C.BRIGHT_CYAN}║              GET IN TOUCH                          ║${C.RESET}
-${C.BRIGHT_CYAN}╚════════════════════════════════════════════════════╝${C.RESET}
-
-${C.GREEN}Email:${C.RESET}    ${profileData.email}
-${C.MAGENTA}GitHub:${C.RESET}   ${profileData.github}
-${C.YELLOW}LinkedIn:${C.RESET} ${profileData.linkedin}
-${C.RED}Twitter:${C.RESET}  ${profileData.twitter}
-
-${C.BRIGHT_CYAN}Feel free to reach out for collaborations or opportunities!${C.RESET}`);
+    this.handlers.openWindow?.('contact');
+    this.output(`${C.BRIGHT_CYAN}Opened contact window.${C.RESET}`);
   }
 
   ls(path = '.') {
@@ -166,11 +127,19 @@ ${C.BRIGHT_CYAN}Feel free to reach out for collaborations or opportunities!${C.R
       return;
     }
 
-    const output = result.items.map(item => {
-      const icon = item.isDir ? '[DIR]' : '[FILE]';
-      const color = item.isDir ? C.BRIGHT_CYAN : C.RESET;
-      return `  ${icon} ${color}${item.name}${C.RESET}`;
-    }).join('\n');
+    const inProjectsDir = this.fs.getCurrentPath().includes('projects') && path === '.';
+    if (inProjectsDir) {
+      this.output(result.items.map((item) => item.name).join('\n'));
+      return;
+    }
+
+    const output = result.items
+      .map((item) => {
+        const icon = item.isDir ? '[DIR]' : '[FILE]';
+        const color = item.isDir ? C.BRIGHT_CYAN : C.RESET;
+        return `  ${icon} ${color}${item.name}${C.RESET}`;
+      })
+      .join('\n');
 
     this.output(output);
   }
@@ -194,21 +163,18 @@ ${C.BRIGHT_CYAN}Feel free to reach out for collaborations or opportunities!${C.R
       return;
     }
 
-    const project = projectsData.find(p => p.id === projectId);
+    const project = this.getProject(projectId);
     if (!project) {
       this.output(`${C.RED}Project '${projectId}' not found.${C.RESET}`);
-      this.output(`${C.CYAN}Use 'projects' to see available projects.${C.RESET}`);
+      this.output(`${C.CYAN}Use 'cd projects' then 'ls' to see available projects.${C.RESET}`);
       return;
     }
 
-    if (project.deployed && project.demoUrl) {
-      this.output(`${C.GREEN}[RUN] Launching ${project.name}...${C.RESET}`);
-      setTimeout(() => {
-        window.open(project.demoUrl, '_blank');
-      }, 500);
+    if (project.deployed && project.demo) {
+      this.output(`${C.GREEN}Opening demo: ${project.demo}${C.RESET}`);
+      this.handlers.openUrl?.(project.demo);
     } else {
-      this.output(`${C.YELLOW}[INFO] Project not deployed yet.${C.RESET}`);
-      this.output(`${C.BRIGHT_CYAN}Use 'github ${projectId}' to view the source code.${C.RESET}`);
+      this.output(`${C.YELLOW}Not deployed: github/${project.repo}${C.RESET}`);
     }
   }
 
@@ -218,16 +184,15 @@ ${C.BRIGHT_CYAN}Feel free to reach out for collaborations or opportunities!${C.R
       return;
     }
 
-    const project = projectsData.find(p => p.id === projectId);
+    const project = this.getProject(projectId);
     if (!project) {
       this.output(`${C.RED}Project '${projectId}' not found.${C.RESET}`);
       return;
     }
 
-    this.output(`${C.GREEN}[RUN] Opening GitHub repository...${C.RESET}`);
-    setTimeout(() => {
-      window.open(project.github, '_blank');
-    }, 500);
+    const githubUrl = `https://github.com/${project.repo}`;
+    this.output(`${C.GREEN}Opening GitHub: ${githubUrl}${C.RESET}`);
+    this.handlers.openUrl?.(githubUrl);
   }
 
   clear() {
@@ -249,15 +214,85 @@ ${C.BRIGHT_CYAN}Feel free to reach out for collaborations or opportunities!${C.R
   neofetch() {
     this.output(`${C.BRIGHT_CYAN}
     _____         ${C.GREEN}${profileData.username}@neko${C.RESET}
-   |  __ \\        ${C.CYAN}-------------------${C.RESET}
+   /  __ \\        ${C.CYAN}-------------------${C.RESET}
    | |  | |       ${C.YELLOW}OS:${C.RESET} neko.OS v1.0.0
    | |  | |       ${C.YELLOW}Kernel:${C.RESET} JavaScript
    | |__| |       ${C.YELLOW}Uptime:${C.RESET} ${Math.floor(performance.now() / 1000)}s
-   |_____/        ${C.YELLOW}Shell:${C.RESET} xterm.js
+   \\_____/        ${C.YELLOW}Shell:${C.RESET} xterm.js
                   ${C.YELLOW}Resolution:${C.RESET} ${window.innerWidth}x${window.innerHeight}
    neko.OS        ${C.YELLOW}Terminal:${C.RESET} NekoTerminal
                   ${C.YELLOW}Theme:${C.RESET} Cyberpunk${C.RESET}
 `);
+  }
+
+  getProject(projectName) {
+    const normalizedName = projectName.toLowerCase().trim();
+    return projectsData.find((project) => project.name.toLowerCase() === normalizedName);
+  }
+
+  autocomplete(line) {
+    const trimmed = line.trimStart();
+    const endsWithSpace = /\s$/.test(line);
+    const tokens = trimmed ? trimmed.split(/\s+/) : [];
+
+    if (tokens.length === 0) {
+      return line;
+    }
+
+    if (tokens.length === 1 && !endsWithSpace) {
+      const matches = this.availableCommands.filter((command) => command.startsWith(tokens[0].toLowerCase()));
+      return this.applyAutocomplete(line, tokens[0], matches);
+    }
+
+    const command = tokens[0].toLowerCase();
+    const argument = endsWithSpace ? '' : tokens[tokens.length - 1];
+    const replacer = (value) => {
+      const commandPrefix = line.slice(0, line.lastIndexOf(argument));
+      return `${commandPrefix}${value}`;
+    };
+
+    if (command === 'run' || command === 'github') {
+      const matches = projectsData
+        .map((project) => project.name)
+        .filter((name) => name.startsWith(argument.toLowerCase()));
+
+      return this.applyAutocomplete(line, argument, matches, replacer);
+    }
+
+    if (command === 'cd') {
+      const directoryResult = this.fs.listDirectory('.');
+      const directoryNames = directoryResult.success
+        ? directoryResult.items.filter((item) => item.isDir).map((item) => item.name)
+        : [];
+      const candidates = [...new Set(['~', '..', ...directoryNames])];
+      const matches = candidates.filter((name) => name.startsWith(argument));
+      return this.applyAutocomplete(line, argument, matches, replacer);
+    }
+
+    return line;
+  }
+
+  applyAutocomplete(line, token, matches, replacer = null) {
+    if (matches.length === 0) {
+      return line;
+    }
+
+    if (matches.length === 1) {
+      const match = `${matches[0]} `;
+      if (!token) {
+        return `${line}${match}`;
+      }
+
+      if (replacer) {
+        return replacer(match);
+      }
+
+      const prefixLength = line.length - token.length;
+      return `${line.slice(0, prefixLength)}${match}`;
+    }
+
+    this.output(matches.join('  '));
+    return line;
   }
 
   getPreviousCommand() {

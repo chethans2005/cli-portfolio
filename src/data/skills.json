@@ -1,38 +1,9 @@
 {
-  "languages": [
-    "JavaScript/TypeScript",
-    "Python",
-    "Go",
-    "Java",
-    "Rust"
-  ],
-  "frontend": [
-    "React",
-    "Next.js",
-    "Vue.js",
-    "Tailwind CSS",
-    "Framer Motion"
-  ],
-  "backend": [
-    "Node.js",
-    "Express",
-    "FastAPI",
-    "Django",
-    "PostgreSQL",
-    "MongoDB"
-  ],
-  "devops": [
-    "Docker",
-    "Kubernetes",
-    "AWS",
-    "CI/CD",
-    "Nginx"
-  ],
-  "tools": [
-    "Git",
-    "Linux",
-    "VS Code",
-    "Postman",
-    "Redis"
+  "bars": [
+    { "name": "Python", "value": 90 },
+    { "name": "JavaScript", "value": 80 },
+    { "name": "C", "value": 70 },
+    { "name": "React", "value": 80 },
+    { "name": "Networking", "value": 60 }
   ]
 }
