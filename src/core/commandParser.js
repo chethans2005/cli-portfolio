@@ -46,7 +46,8 @@ export class CommandParser {
     this.historyIndex = this.commandHistory.length;
 
     const [command, ...args] = trimmedInput.split(' ');
-    const cmd = command.toLowerCase();
+    const normalizedCommand = command.replace(/^\/+/, '');
+    const cmd = normalizedCommand.toLowerCase();
 
     const commands = {
       help: () => this.help(),
@@ -94,8 +95,16 @@ ${C.MAGENTA}Pro tip:${C.RESET} Use ${C.CYAN}cd projects${C.RESET} then ${C.CYAN}
   }
 
   about() {
-    this.handlers.openWindow?.('about');
-    this.output(`${C.BRIGHT_CYAN}Opened about window.${C.RESET}`);
+    this.output(`${C.YELLOW}Accessing secure records...${C.RESET}`);
+
+    window.setTimeout(() => {
+      this.output(`${C.BRIGHT_CYAN}Scanning subject...${C.RESET}`);
+    }, 220);
+
+    window.setTimeout(() => {
+      this.handlers.openWindow?.('about');
+      this.output(`${C.BRIGHT_CYAN}Opened about window.${C.RESET}`);
+    }, 560);
   }
 
   skills() {

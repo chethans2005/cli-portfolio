@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00141f"/>
+      <stop offset="1" stop-color="#07293a"/>
+    </linearGradient>
+    <linearGradient id="ink" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#9be7ff"/>
+      <stop offset="1" stop-color="#54d2ff"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="320" height="320" rx="20" fill="url(#bg)"/>
+  <g opacity="0.28" stroke="#6ad9ff" stroke-width="1">
+    <path d="M0 40H320"/>
+    <path d="M0 80H320"/>
+    <path d="M0 120H320"/>
+    <path d="M0 160H320"/>
+    <path d="M0 200H320"/>
+    <path d="M0 240H320"/>
+    <path d="M0 280H320"/>
+  </g>
+
+  <g transform="translate(54 38)" filter="url(#glow)">
+    <path d="M38 56V30c0-8 10-12 16-6l18 16c9-3 20-5 32-5s23 2 32 5l18-16c6-6 16-2 16 6v26c10 11 16 25 16 41 0 37-36 67-82 67S22 134 22 97c0-16 6-30 16-41Z" stroke="url(#ink)" stroke-width="6"/>
+    <circle cx="88" cy="95" r="8" fill="#9be7ff"/>
+    <circle cx="126" cy="95" r="8" fill="#9be7ff"/>
+    <path d="M92 126c7 5 11 7 15 7s9-2 16-7" stroke="#9be7ff" stroke-width="6" stroke-linecap="round"/>
+    <path d="M25 112c11 6 22 8 34 8M189 112c-11 6-22 8-34 8" stroke="#54d2ff" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+  </g>
+
+  <g font-family="'Fira Code', monospace" fill="#d4f3ff" opacity="0.88">
+    <text x="20" y="274" font-size="16" letter-spacing="2">SUBJECT: FELIS-01</text>
+    <text x="20" y="296" font-size="13" letter-spacing="1.5" opacity="0.8">STATUS: TRACKED</text>
+  </g>
+</svg>

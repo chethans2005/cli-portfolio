@@ -1,15 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  font-family: 'Fira Code', Consolas, Monaco, monospace;
+  font-family: 'Space Grotesk', 'Fira Code', Consolas, Monaco, monospace;
   line-height: 1.5;
   font-weight: 400;
-  color: #00ff41;
-  background-color: #000000;
+  color: #d8f4ff;
+  background-color: #03070d;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -45,10 +45,10 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 255, 65, 0.5);
+  background: rgba(103, 232, 249, 0.45);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 255, 65, 0.7);
+  background: rgba(56, 189, 248, 0.7);
 }
