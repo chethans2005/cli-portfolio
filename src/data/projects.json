@@ -28,5 +28,11 @@
     "repo": "chethans2005/my-portfolio-official",
     "deployed": true,
     "demo": "https://my-portfolio-official-six.vercel.app/"
+  },
+  {
+    "name": "messhy.ai",
+    "repo": "chethans2005/messhy.ai",
+    "deployed": false,
+    "demo": ""
   }
 ]

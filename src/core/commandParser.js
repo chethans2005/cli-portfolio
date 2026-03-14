@@ -241,13 +241,16 @@ ${C.BRIGHT_YELLOW}Pro tip:${C.RESET} Use ${C.CYAN}cd projects${C.RESET} then ${C
 `);
   }
 
-  exit(){
+  exit() {
     this.output(`${C.YELLOW}Shutting down neko.OS...${C.RESET}`);
     window.setTimeout(() => {
       this.output(`${C.RED}Goodbye!${C.RESET}`);
       window.setTimeout(() => {
-        window.close();
-      }, 2000);
+        const closed = window.close();
+        if (!closed) {
+          window.location.href = 'about:blank';
+        }
+      }, 800);
     }, 1200);
   }
 
@@ -257,70 +260,83 @@ ${C.BRIGHT_YELLOW}Pro tip:${C.RESET} Use ${C.CYAN}cd projects${C.RESET} then ${C
   }
 
   autocomplete(line) {
-    const trimmed = line.trimStart();
-    const endsWithSpace = /\s$/.test(line);
-    const tokens = trimmed ? trimmed.split(/\s+/) : [];
+  const trimmed = line.trimStart();
+  const endsWithSpace = /\s$/.test(line);
+  const tokens = trimmed ? trimmed.split(/\s+/) : [];
 
-    if (tokens.length === 0) {
-      return line;
-    }
-
-    if (tokens.length === 1 && !endsWithSpace) {
-      const matches = this.availableCommands.filter((command) => command.startsWith(tokens[0].toLowerCase()));
-      return this.applyAutocomplete(line, tokens[0], matches);
-    }
-
-    const command = tokens[0].toLowerCase();
-    const argument = endsWithSpace ? '' : tokens[tokens.length - 1];
-    const replacer = (value) => {
-      const commandPrefix = line.slice(0, line.lastIndexOf(argument));
-      return `${commandPrefix}${value}`;
-    };
-
-    if (command === 'run' || command === 'github') {
-      const matches = projectsData
-        .map((project) => project.name)
-        .filter((name) => name.startsWith(argument.toLowerCase()));
-
-      return this.applyAutocomplete(line, argument, matches, replacer);
-    }
-
-    if (command === 'cd') {
-      const directoryResult = this.fs.listDirectory('.');
-      const directoryNames = directoryResult.success
-        ? directoryResult.items.filter((item) => item.isDir).map((item) => item.name)
-        : [];
-      const candidates = [...new Set(['~', '..', ...directoryNames])];
-      const matches = candidates.filter((name) => name.startsWith(argument));
-      return this.applyAutocomplete(line, argument, matches, replacer);
-    }
-
+  if (tokens.length === 0) {
     return line;
   }
 
-  applyAutocomplete(line, token, matches, replacer = null) {
-    if (matches.length === 0) {
-      return line;
-    }
+  if (tokens.length === 1 && !endsWithSpace) {
+    const matches = this.availableCommands.filter((command) => command.startsWith(tokens[0].toLowerCase()));
+    return this.applyAutocomplete(line, tokens[0], matches);
+  }
 
-    if (matches.length === 1) {
-      const match = `${matches[0]} `;
-      if (!token) {
-        return `${line}${match}`;
-      }
+  const command = tokens[0].toLowerCase();
+  const argument = endsWithSpace ? '' : tokens[tokens.length - 1];
+  const argumentIndex = endsWithSpace ? line.length : line.lastIndexOf(tokens[tokens.length - 1]);
+  const replacer = (value) => `${line.slice(0, argumentIndex)}${value}`;
 
-      if (replacer) {
-        return replacer(match);
-      }
+  if (command === 'run' || command === 'github') {
+    const matches = projectsData
+      .map((project) => project.name)
+      .filter((name) => name.startsWith(argument.toLowerCase()));
 
-      const prefixLength = line.length - token.length;
-      return `${line.slice(0, prefixLength)}${match}`;
-    }
+    return this.applyAutocomplete(line, argument, matches, replacer);
+  }
 
-    this.output(matches.join('  '));
+  if (command === 'cd') {
+    const directoryResult = this.fs.listDirectory('.');
+    const directoryNames = directoryResult.success
+      ? directoryResult.items.filter((item) => item.isDir).map((item) => item.name)
+      : [];
+    const candidates = [...new Set(['~', '..', ...directoryNames])];
+    const matches = candidates.filter((name) => name.startsWith(argument));
+    return this.applyAutocomplete(line, argument, matches, replacer);
+  }
+
+  return line;
+}
+
+applyAutocomplete(line, token, matches, replacer = null) {
+  if (matches.length === 0) {
     return line;
   }
 
+  if (matches.length === 1) {
+    const match = `${matches[0]} `;
+    if (!token) return `${line}${match}`;
+    if (replacer) return replacer(match);
+    return `${line.slice(0, line.length - token.length)}${match}`;
+  }
+
+  // Longest common prefix (case-insensitive compare, preserve first match casing)
+  const lcp = matches.reduce((prefix, match) => {
+    let i = 0;
+    while (
+      i < prefix.length &&
+      i < match.length &&
+      prefix[i].toLowerCase() === match[i].toLowerCase()
+    ) {
+      i++;
+    }
+    return prefix.slice(0, i);
+  }, matches[0]);
+
+  // If LCP is longer than what user typed, complete up to LCP first
+  // e.g. "nek" -> "neko" (common prefix of "neko" and "neko1")
+  if (lcp.length > token.length) {
+    if (replacer) return replacer(lcp);
+    return `${line.slice(0, line.length - token.length)}${lcp}`;
+  }
+
+  // LCP == token, meaning user has typed up to the common prefix already.
+  // Show all matches, then echo the same line back so user can keep typing.
+  // This mimics bash behavior: suggestions appear, prompt is redrawn with same input.
+  this.output("\n" + matches.join('  '));// reprint the current line as new input
+  return null;
+}
   getPreviousCommand() {
     if (this.historyIndex > 0) {
       this.historyIndex--;

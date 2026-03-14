@@ -175,14 +175,18 @@ export default function Terminal({ onOpenWindow }) {
         writePrompt(true);
       } else if (code === 9) { // Tab
         const autocompleted = commandParserRef.current.autocomplete(currentLineRef.current);
-        if (autocompleted !== currentLineRef.current) {
-          currentLineRef.current = autocompleted;
-          cursorPosRef.current = autocompleted.length;
-          renderInputLine();
+        if (autocompleted === null) {
+            writePrompt(true);
+            term.write(currentLineRef.current);
+            cursorPosRef.current = currentLineRef.current.length;
+        } else if (autocompleted !== currentLineRef.current) {
+            currentLineRef.current = autocompleted;
+            cursorPosRef.current = autocompleted.length;
+            renderInputLine();
         } else {
           term.write('\x07');
         }
-      } else if (code === 127) { // Backspace
+    }else if (code === 127) { // Backspace
         if (cursorPosRef.current > 0) {
           currentLineRef.current = currentLineRef.current.slice(0, -1);
           cursorPosRef.current--;
