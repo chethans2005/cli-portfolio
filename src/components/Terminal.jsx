@@ -24,6 +24,8 @@ const WELCOME_MESSAGE = `Welcome to neko.OS!
 Type 'about' to learn more about me.
 `;
 
+const BOOT_COLORS = ['\x1b[96m', '\x1b[92m', '\x1b[93m', '\x1b[95m'];
+
 export default function Terminal({ onOpenWindow }) {
   const terminalRef = useRef(null);
   const xtermRef = useRef(null);
@@ -50,26 +52,26 @@ export default function Terminal({ onOpenWindow }) {
       fontFamily: '"Fira Code", Consolas, Monaco, monospace',
       fontSize: 13,
       theme: {
-        background: '#060b14',
-        foreground: '#d5f4ff',
+        background: '#06090f',
+        foreground: '#d7ffd1',
         cursor: '#67e8f9',
-        cursorAccent: '#0a0e14',
-        black: '#020611',
-        red: '#fb7185',
-        green: '#2dd4bf',
-        yellow: '#fbbf24',
+        cursorAccent: '#071007',
+        black: '#03060b',
+        red: '#ff6b6b',
+        green: '#4ade80',
+        yellow: '#f5c518',
         blue: '#60a5fa',
-        magenta: '#38bdf8',
+        magenta: '#c084fc',
         cyan: '#67e8f9',
-        white: '#e6f8ff',
-        brightBlack: '#3f506b',
-        brightRed: '#fda4af',
-        brightGreen: '#5eead4',
+        white: '#d8ffd2',
+        brightBlack: '#334155',
+        brightRed: '#ff8b8b',
+        brightGreen: '#9aff9f',
         brightYellow: '#fcd34d',
         brightBlue: '#93c5fd',
-        brightMagenta: '#7dd3fc',
+        brightMagenta: '#e9d5ff',
         brightCyan: '#a5f3fc',
-        brightWhite: '#ffffff',
+        brightWhite: '#efffec',
       },
       allowTransparency: true,
     });
@@ -115,7 +117,7 @@ export default function Terminal({ onOpenWindow }) {
     let bootIndex = 0;
     const writePrompt = (newLine = true) => {
       const path = fileSystemRef.current.getPromptPath();
-      term.write(`${newLine ? '\r\n' : '\r'}\x1b[32m${profileData.username}@neko\x1b[0m:\x1b[34m${path}\x1b[0m$ `);
+      term.write(`${newLine ? '\r\n' : '\r'}\x1b[92m${profileData.username}@neko\x1b[0m:\x1b[96m${path}\x1b[0m\x1b[95m$\x1b[0m `);
     };
 
     const renderInputLine = () => {
@@ -129,7 +131,12 @@ export default function Terminal({ onOpenWindow }) {
         const { text, delay } = BOOT_SEQUENCE[bootIndex];
         schedule(() => {
           if (text) {
-            term.writeln(`\x1b[33m${text}\x1b[0m`);
+            const color = text.startsWith('[OK]')
+              ? BOOT_COLORS[bootIndex % BOOT_COLORS.length]
+              : text.includes('System ready')
+                ? '\x1b[93m'
+                : '\x1b[96m';
+            term.writeln(`${color}${text}\x1b[0m`);
           } else {
             term.writeln('');
           }
@@ -140,7 +147,7 @@ export default function Terminal({ onOpenWindow }) {
         // Show banner and welcome
         schedule(() => {
           ASCII_BANNER.split('\n').forEach((line) => {
-            term.writeln(`\x1b[36m${line}\x1b[0m`);
+            term.writeln(`\x1b[96m${line}\x1b[0m`);
           });
           term.writeln(WELCOME_MESSAGE);
           isBootedRef.current = true;

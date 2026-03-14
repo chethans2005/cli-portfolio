@@ -1,5 +1,14 @@
+import projectsData from '../data/projects.json';
+
 export class FileSystem {
   constructor() {
+    const projectChildren = projectsData.reduce((acc, project) => {
+      if (project?.name) {
+        acc[project.name] = { type: 'dir', children: {} };
+      }
+      return acc;
+    }, {});
+
     this.currentPath = '/home/chethan';
     this.structure = {
       '/': {
@@ -13,12 +22,7 @@ export class FileSystem {
                 children: {
                   'projects': {
                     type: 'dir',
-                    children: {
-                      'dhcp-server': { type: 'dir', children: {} },
-                      'redis-cache': { type: 'dir', children: {} },
-                      'ai-tutor': { type: 'dir', children: {} },
-                      'console-portfolio': { type: 'dir', children: {} },
-                    }
+                    children: projectChildren
                   },
                   'about.txt': { type: 'file' },
                   'skills.txt': { type: 'file' },

@@ -5,51 +5,55 @@ import HologramProfile from './HologramProfile';
 
 function ContactWindow({ profile }) {
   return (
-    <div className="space-y-3 text-sm text-white/90">
-      <p>
-        GitHub:{' '}
-        <a
-          className="text-cyan-300 hover:text-cyan-200 underline"
-          href={profile.github}
-          target="_blank"
-          rel="noreferrer"
-        >
-          {profile.github}
-        </a>
-      </p>
-      <p>
-        LinkedIn:{' '}
-        <a
-          className="text-cyan-300 hover:text-cyan-200 underline"
-          href={profile.linkedin}
-          target="_blank"
-          rel="noreferrer"
-        >
-          {profile.linkedin}
-        </a>
-      </p>
-      <p>
-        Email:{' '}
-        <a className="text-cyan-300 hover:text-cyan-200 underline" href={`mailto:${profile.email}`}>
-          {profile.email}
-        </a>
-      </p>
+    <div className="space-y-4 font-mono text-sm text-[#7abf7a]">
+      <p className="text-[11px] uppercase tracking-[0.2em] text-[#67e8f9]">Communication Channels</p>
+      <div className="space-y-2 rounded border border-[#1a2f1a] bg-[rgba(0,18,0,0.55)] p-3">
+        <p>
+          <span className="mr-2 text-[#93c5fd]">EMAIL //</span>
+          <a className="break-all text-[#a8ff78] underline decoration-[#2d5a2d] underline-offset-2 hover:text-[#c8ffb0]" href={`mailto:${profile.email}`}>
+            {profile.email}
+          </a>
+        </p>
+        <p>
+          <span className="mr-2 text-[#fcd34d]">GITHUB //</span>
+          <a
+            className="break-all text-[#a8ff78] underline decoration-[#2d5a2d] underline-offset-2 hover:text-[#c8ffb0]"
+            href={profile.github}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {profile.github}
+          </a>
+        </p>
+        <p>
+          <span className="mr-2 text-[#c084fc]">LINKEDIN //</span>
+          <a
+            className="break-all text-[#a8ff78] underline decoration-[#2d5a2d] underline-offset-2 hover:text-[#c8ffb0]"
+            href={profile.linkedin}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {profile.linkedin}
+          </a>
+        </p>
+      </div>
     </div>
   );
 }
 
 function SkillsWindow({ skills }) {
   return (
-    <div className="space-y-4 text-sm text-white/90">
+    <div className="space-y-4 font-mono text-sm text-[#7abf7a]">
+      <p className="text-[11px] uppercase tracking-[0.2em] text-[#67e8f9]">Skill Matrix</p>
       {(skills.bars || []).map((skill, index) => (
-        <div key={skill.name} className="space-y-1">
-          <div className="flex justify-between">
-            <span>{skill.name}</span>
-            <span>{skill.value}%</span>
+        <div key={skill.name} className="space-y-1.5">
+          <div className="flex justify-between text-[#6aaa6a]">
+            <span>{skill.name.toUpperCase()}</span>
+            <span className="text-[#fcd34d]">{skill.value}%</span>
           </div>
-          <div className="h-2 rounded bg-white/10 overflow-hidden">
+          <div className="h-2 overflow-hidden rounded-sm border border-[#1a2f1a] bg-[#0d1a0d]">
             <Motion.div
-              className="h-full rounded bg-gradient-to-r from-cyan-400 to-emerald-400"
+              className="h-full bg-gradient-to-r from-[#4bff72] via-[#67e8f9] to-[#4bff72] shadow-[0_0_10px_rgba(75,255,114,0.45)]"
               initial={{ width: 0 }}
               animate={{ width: `${skill.value}%` }}
               transition={{ duration: 0.7, delay: index * 0.08, ease: 'easeOut' }}
@@ -97,9 +101,9 @@ export default function WindowManager({ activeWindow, onClose, profile, skills }
           onMouseDown={onClose}
         >
           {activeWindow === 'about' ? (
-            <div className="absolute inset-0 grid place-items-center p-3 sm:p-4 lg:p-6">
+            <div className="absolute inset-0 flex items-center justify-center p-3 sm:p-4 lg:p-6">
               <Motion.div
-                className="relative z-20 w-full max-w-6xl max-h-[90vh] overflow-y-auto"
+                className="relative z-20 mx-auto max-h-[90vh] w-[min(94vw,72rem)] overflow-y-auto"
                 initial={{ opacity: 0, y: 24, scale: 0.97 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 12, scale: 0.98 }}
@@ -110,30 +114,35 @@ export default function WindowManager({ activeWindow, onClose, profile, skills }
               </Motion.div>
             </div>
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center p-4">
+            <div className="absolute inset-0 grid place-items-center p-4">
               <Motion.div
-                className="relative z-10 w-full max-w-lg rounded-xl border border-cyan-300/20 bg-black/55 backdrop-blur-xl shadow-2xl"
+                className="relative z-10 w-full max-w-lg overflow-hidden rounded-lg border border-[#1a2a1a] bg-[rgba(0,0,0,0.82)] text-[#a8ff78] shadow-[0_0_24px_rgba(75,255,114,0.12),0_0_40px_rgba(56,189,248,0.08)]"
                 initial={{ opacity: 0, y: 28, scale: 0.96 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 18, scale: 0.98 }}
                 transition={{ duration: 0.24, ease: 'easeOut' }}
-                drag
-                dragMomentum={false}
-                dragElastic={0.1}
                 onMouseDown={(event) => event.stopPropagation()}
               >
-                <div className="flex items-center justify-between px-4 py-3 border-b border-cyan-300/20 bg-black/35">
-                  <h2 className="text-cyan-200 font-semibold tracking-wide uppercase text-xs">{activeWindow}</h2>
+                <div className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_3px,rgba(0,0,0,0.2)_3px,rgba(0,0,0,0.2)_4px)] opacity-60" />
+
+                <div className="relative z-10 flex items-center justify-between border-b border-[#1f3d1f] bg-[linear-gradient(90deg,rgba(0,30,0,0.65),rgba(3,24,35,0.45),rgba(35,24,3,0.28))] px-4 py-3 font-mono">
+                  <div className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-[#ff4f4f] shadow-[0_0_6px_#ff4f4f]" />
+                    <span className="h-2 w-2 rounded-full bg-[#f5c518] shadow-[0_0_6px_#f5c518]" />
+                    <span className="h-2 w-2 rounded-full bg-[#4bff72] shadow-[0_0_6px_#4bff72]" />
+                    <h2 className="ml-2 text-[11px] uppercase tracking-[0.2em] text-[#67e8f9]">sys://{activeWindow}.module</h2>
+                  </div>
                   <button
                     type="button"
                     onClick={onClose}
-                    className="w-7 h-7 rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+                    className="grid h-7 w-7 place-items-center rounded-full border border-[#3a1a1a] bg-[#3a1a1a]/70 text-[#ff6b6b] transition hover:bg-[#4a1f1f] hover:text-[#ff8b8b]"
+                    aria-label="Close window"
                   >
                     x
                   </button>
                 </div>
 
-                <div className="p-4">
+                <div className="relative z-10 p-4">
                   {activeWindow === 'contact' && <ContactWindow profile={profile} />}
                   {activeWindow === 'skills' && <SkillsWindow skills={skills} />}
                 </div>

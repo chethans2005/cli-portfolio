@@ -12,16 +12,16 @@ export default function TerminalWindow({ onOpenWindow }) {
       className="w-2/3 min-w-[24rem] h-[30rem] sm:h-[33rem] mx-auto"
     >
       {/* Terminal Window */}
-      <div className="relative w-full h-full rounded-xl overflow-hidden shadow-2xl border border-cyan-200/30 p-3"
+      <div className="relative w-full h-full rounded-xl overflow-hidden shadow-2xl border border-[#2b6a2b]/65 p-3"
            style={{
-             background: 'rgba(6, 11, 20, 0.88)',
+             background: 'rgba(4, 12, 4, 0.9)',
              backdropFilter: 'blur(12px)',
-             boxShadow: '0 0 40px rgba(56, 189, 248, 0.14), 0 0 80px rgba(14, 165, 233, 0.12)',
+             boxShadow: '0 0 40px rgba(75, 255, 114, 0.18), 0 0 80px rgba(56, 189, 248, 0.12), 0 0 110px rgba(245, 158, 11, 0.08)',
            }}>
         
         {/* Window Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-cyan-200/20"
-             style={{ background: 'rgba(0, 0, 0, 0.4)' }}>
+           <div className="relative flex items-center justify-between px-4 py-3 border-b border-[#1f3d1f]"
+             style={{ background: 'linear-gradient(90deg, rgba(0, 22, 0, 0.68), rgba(7, 27, 15, 0.7), rgba(8, 20, 30, 0.42))' }}>
           
           {/* macOS-style buttons */}
           <div className="flex items-center space-x-2">
@@ -34,11 +34,11 @@ export default function TerminalWindow({ onOpenWindow }) {
           </div>
 
           {/* Window Title */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-2">
-            <span className="text-terminal-cyan font-mono text-sm font-semibold tracking-wider">
+          <div className="pointer-events-none absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center space-x-2">
+            <span className="font-mono text-sm font-bold tracking-[0.18em] text-[#b7ff7c]">
               neko.OS
             </span>
-            <div className="w-2 h-2 rounded-full bg-cyan-300 animate-pulse" />
+            <div className="h-2 w-2 rounded-full bg-[#4bff72] animate-pulse shadow-[0_0_10px_rgba(75,255,114,0.8)]" />
           </div>
 
           {/* Empty space for balance */}
@@ -47,13 +47,13 @@ export default function TerminalWindow({ onOpenWindow }) {
 
         {/* Terminal Content */}
         <div className="w-full h-[calc(100%-49px)] p-3">
-          <div className="w-full h-full rounded-lg border border-cyan-200/20 bg-black/35">
+          <div className="w-full h-full rounded-lg border border-[#1f3d1f] bg-[radial-gradient(120%_140%_at_0%_0%,rgba(18,66,28,0.25),rgba(0,8,0,0.7))]">
             <Terminal onOpenWindow={onOpenWindow} />
           </div>
         </div>
 
         {/* Glow effect */}
-        <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-200/20 via-sky-300/20 to-blue-300/20 rounded-xl blur-sm -z-10 opacity-50" />
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-[#2f6f2f]/35 via-[#4bff72]/25 to-[#38bdf8]/30 rounded-xl blur-sm -z-10 opacity-60" />
       </div>
     </MotionDiv>
   );

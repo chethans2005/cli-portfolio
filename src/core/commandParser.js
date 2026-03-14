@@ -5,10 +5,13 @@ const C = {
   CYAN: '\x1b[36m',
   GREEN: '\x1b[32m',
   YELLOW: '\x1b[33m',
+  BLUE: '\x1b[34m',
   MAGENTA: '\x1b[35m',
   RED: '\x1b[31m',
   BRIGHT_GREEN: '\x1b[92m',
   BRIGHT_CYAN: '\x1b[96m',
+  BRIGHT_YELLOW: '\x1b[93m',
+  BRIGHT_MAGENTA: '\x1b[95m',
   BOLD: '\x1b[1m',
   RESET: '\x1b[0m',
 };
@@ -77,21 +80,21 @@ export class CommandParser {
   help() {
     this.output(`${C.BRIGHT_CYAN}${C.BOLD}Available Commands:${C.RESET}
 
-  ${C.GREEN}help${C.RESET}        - Show this help message
-  ${C.GREEN}about${C.RESET}       - Learn more about me
-  ${C.GREEN}skills${C.RESET}      - View my technical skills
-  ${C.GREEN}projects${C.RESET}    - Browse my projects
-  ${C.GREEN}contact${C.RESET}     - Get in touch
+  ${C.BRIGHT_GREEN}help${C.RESET}        - Show this help message
+  ${C.BRIGHT_YELLOW}about${C.RESET}       - Learn more about me
+  ${C.BRIGHT_MAGENTA}skills${C.RESET}      - View my technical skills
+  ${C.BLUE}projects${C.RESET}    - Browse my projects
+  ${C.CYAN}contact${C.RESET}     - Get in touch
   ${C.GREEN}ls${C.RESET}          - List directory contents
   ${C.GREEN}cd${C.RESET} [dir]    - Change directory
   ${C.GREEN}pwd${C.RESET}         - Print working directory
-  ${C.GREEN}run${C.RESET} [proj]  - Run a project demo
-  ${C.GREEN}github${C.RESET} [pr] - Open project on GitHub
-  ${C.GREEN}clear${C.RESET}       - Clear terminal
-  ${C.GREEN}whoami${C.RESET}      - Display current user
-  ${C.GREEN}neofetch${C.RESET}    - System information
+  ${C.BRIGHT_GREEN}run${C.RESET} [proj]  - Run a project demo
+  ${C.BRIGHT_CYAN}github${C.RESET} [pr] - Open project on GitHub
+  ${C.YELLOW}clear${C.RESET}       - Clear terminal
+  ${C.MAGENTA}whoami${C.RESET}      - Display current user
+  ${C.BRIGHT_MAGENTA}neofetch${C.RESET}    - System information
 
-${C.MAGENTA}Pro tip:${C.RESET} Use ${C.CYAN}cd projects${C.RESET} then ${C.CYAN}ls${C.RESET} to explore my work.`);
+${C.BRIGHT_YELLOW}Pro tip:${C.RESET} Use ${C.CYAN}cd projects${C.RESET} then ${C.BRIGHT_CYAN}ls${C.RESET} to explore my work.`);
   }
 
   about() {
@@ -113,10 +116,10 @@ ${C.MAGENTA}Pro tip:${C.RESET} Use ${C.CYAN}cd projects${C.RESET} then ${C.CYAN}
   }
 
   projects() {
-    this.output(`${C.BRIGHT_CYAN}Project workspace:${C.RESET} ${C.CYAN}cd projects${C.RESET}`);
-    this.output(`${C.BRIGHT_CYAN}Then list:${C.RESET} ${C.CYAN}ls${C.RESET}`);
-    this.output(`${C.BRIGHT_CYAN}Open repo:${C.RESET} ${C.CYAN}github <project-name>${C.RESET}`);
-    this.output(`${C.BRIGHT_CYAN}Run demo:${C.RESET} ${C.CYAN}run <project-name>${C.RESET}`);
+    this.output(`${C.BLUE}Project workspace:${C.RESET} ${C.CYAN}cd projects${C.RESET}`);
+    this.output(`${C.BRIGHT_GREEN}Then list:${C.RESET} ${C.BRIGHT_CYAN}ls${C.RESET}`);
+    this.output(`${C.BRIGHT_MAGENTA}Open repo:${C.RESET} ${C.CYAN}github <project-name>${C.RESET}`);
+    this.output(`${C.BRIGHT_YELLOW}Run demo:${C.RESET} ${C.BRIGHT_GREEN}run <project-name>${C.RESET}`);
   }
 
   contact() {
@@ -183,7 +186,8 @@ ${C.MAGENTA}Pro tip:${C.RESET} Use ${C.CYAN}cd projects${C.RESET} then ${C.CYAN}
       this.output(`${C.GREEN}Opening demo: ${project.demo}${C.RESET}`);
       this.handlers.openUrl?.(project.demo);
     } else {
-      this.output(`${C.YELLOW}Not deployed: github/${project.repo}${C.RESET}`);
+      const githubUrl = `https://github.com/${project.repo}`;
+      this.output(`${C.YELLOW}Not deployed github repo: ${githubUrl}${C.RESET}`);
     }
   }
 
@@ -209,7 +213,7 @@ ${C.MAGENTA}Pro tip:${C.RESET} Use ${C.CYAN}cd projects${C.RESET} then ${C.CYAN}
   }
 
   whoami() {
-    this.output(`${C.GREEN}${profileData.username}${C.RESET}`);
+    this.output(`${C.BRIGHT_MAGENTA}${profileData.username}${C.RESET}`);
   }
 
   pwd() {
@@ -222,15 +226,15 @@ ${C.MAGENTA}Pro tip:${C.RESET} Use ${C.CYAN}cd projects${C.RESET} then ${C.CYAN}
 
   neofetch() {
     this.output(`${C.BRIGHT_CYAN}
-    _____         ${C.GREEN}${profileData.username}@neko${C.RESET}
-   /  __ \\        ${C.CYAN}-------------------${C.RESET}
-   | |  | |       ${C.YELLOW}OS:${C.RESET} neko.OS v1.0.0
-   | |  | |       ${C.YELLOW}Kernel:${C.RESET} JavaScript
-   | |__| |       ${C.YELLOW}Uptime:${C.RESET} ${Math.floor(performance.now() / 1000)}s
-   \\_____/        ${C.YELLOW}Shell:${C.RESET} xterm.js
-                  ${C.YELLOW}Resolution:${C.RESET} ${window.innerWidth}x${window.innerHeight}
+    _____         ${C.BRIGHT_GREEN}${profileData.username}@neko${C.RESET}
+   /  __ \        ${C.CYAN}-------------------${C.RESET}
+   | |  | |       ${C.BRIGHT_YELLOW}OS:${C.RESET} neko.OS v1.0.0
+   | |  | |       ${C.BRIGHT_MAGENTA}Kernel:${C.RESET} JavaScript
+   | |__| |       ${C.BRIGHT_CYAN}Uptime:${C.RESET} ${Math.floor(performance.now() / 1000)}s
+   \_____/        ${C.GREEN}Shell:${C.RESET} xterm.js
+                  ${C.BLUE}Resolution:${C.RESET} ${window.innerWidth}x${window.innerHeight}
    neko.OS        ${C.YELLOW}Terminal:${C.RESET} NekoTerminal
-                  ${C.YELLOW}Theme:${C.RESET} Cyberpunk${C.RESET}
+                  ${C.MAGENTA}Theme:${C.RESET} Neon Forest${C.RESET}
 `);
   }
 
