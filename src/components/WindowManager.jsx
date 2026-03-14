@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { AnimatePresence, motion as Motion } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import HologramProfile from './HologramProfile';
@@ -67,6 +67,7 @@ function SkillsWindow({ skills }) {
 
 export default function WindowManager({ activeWindow, onClose, profile, skills }) {
   const isAboutOpen = activeWindow === 'about';
+  const overlayRef = useRef(null);
 
   useEffect(() => {
     if (!activeWindow) return undefined;
@@ -87,6 +88,7 @@ export default function WindowManager({ activeWindow, onClose, profile, skills }
     <AnimatePresence>
       {activeWindow && (
         <Motion.div
+          ref={overlayRef}
           className={`fixed inset-0 z-[9999] ${isAboutOpen ? 'bg-black/30 backdrop-blur-md' : 'bg-black/35'}`}
           style={{
             position: 'fixed',
@@ -108,6 +110,10 @@ export default function WindowManager({ activeWindow, onClose, profile, skills }
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 12, scale: 0.98 }}
                 transition={{ duration: 0.28, ease: 'easeOut' }}
+                drag
+                dragConstraints={overlayRef}
+                dragMomentum={false}
+                dragElastic={0.08}
                 onMouseDown={(event) => event.stopPropagation()}
               >
                 <HologramProfile profile={profile} onClose={onClose} />
@@ -121,6 +127,10 @@ export default function WindowManager({ activeWindow, onClose, profile, skills }
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 18, scale: 0.98 }}
                 transition={{ duration: 0.24, ease: 'easeOut' }}
+                drag
+                dragConstraints={overlayRef}
+                dragMomentum={false}
+                dragElastic={0.08}
                 onMouseDown={(event) => event.stopPropagation()}
               >
                 <div className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_3px,rgba(0,0,0,0.2)_3px,rgba(0,0,0,0.2)_4px)] opacity-60" />
