@@ -22,5 +22,11 @@
     "repo": "chethans2005/cli-portfolio",
     "deployed": false,
     "demo": ""
+  },
+  {
+    "name": "my-portfolio-official",
+    "repo": "chethans2005/my-portfolio-official",
+    "deployed": true,
+    "demo": "https://my-portfolio-official-six.vercel.app/"
   }
 ]
