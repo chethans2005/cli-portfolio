@@ -385,7 +385,7 @@ export default function HologramProfile({ profile = {}, onClose = () => {} }) {
                 </div>
                 <div className="hp-meta-row">
                   <span>CLEARANCE</span>
-                  <span className="hp-meta-val">{(profile.clearance || 'OPEN SOURCE').slice(0, 10)}</span>
+                  <span className="hp-meta-val">{(profile.clearance || 'OPEN SRC').slice(0, 10)}</span>
                 </div>
                 <div className="hp-meta-row">
                   <span>UPTIME</span>

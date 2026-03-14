@@ -24,7 +24,7 @@ const WELCOME_MESSAGE = `Welcome to neko.OS!
 Type 'about' to learn more about me.
 `;
 
-const BOOT_COLORS = ['\x1b[96m', '\x1b[92m', '\x1b[93m', '\x1b[95m'];
+const BOOT_COLORS = [ '\x1b[93m', '\x1b[95m'];
 
 export default function Terminal({ onOpenWindow }) {
   const terminalRef = useRef(null);

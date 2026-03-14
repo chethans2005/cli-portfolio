@@ -3,180 +3,332 @@ import { AnimatePresence, motion as Motion } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import HologramProfile from './HologramProfile';
 
-function ContactWindow({ profile }) {
+/* ── shared styles injected once ───────────────────────── */
+const STYLES = `
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+
+  .wm-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    display: grid; place-items: center; padding: 16px;
+  }
+  .wm-overlay-about {
+    background: rgba(0,0,0,0.30);
+    backdrop-filter: blur(14px);
+  }
+  .wm-overlay-panel {
+    background: rgba(0,0,0,0.35);
+  }
+
+  .wm-panel {
+    font-family: 'Share Tech Mono', monospace;
+    background: #000;
+    color: #a8ff78;
+    width: 100%;
+    max-width: 480px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #1a2a1a;
+    box-sizing: border-box;
+  }
+
+  /* scanlines */
+  .wm-scanlines {
+    position: absolute; inset: 0; pointer-events: none; z-index: 20;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent, transparent 2px,
+      rgba(0,0,0,0.22) 2px, rgba(0,0,0,0.22) 4px
+    );
+  }
+
+  /* grid bg */
+  .wm-grid {
+    position: absolute; inset: 0; pointer-events: none; z-index: 1;
+    background-image:
+      linear-gradient(rgba(100,255,100,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(100,255,100,0.04) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  /* corner brackets */
+  .wm-corner { position: absolute; width: 14px; height: 14px; border-color: #1f3d1f; border-style: solid; z-index: 12; }
+  .wm-corner-tl { top: 4px; left: 4px;   border-width: 1px 0 0 1px; }
+  .wm-corner-tr { top: 4px; right: 4px;  border-width: 1px 1px 0 0; }
+  .wm-corner-bl { bottom: 4px; left: 4px;  border-width: 0 0 1px 1px; }
+  .wm-corner-br { bottom: 4px; right: 4px; border-width: 0 1px 1px 0; }
+
+  /* topbar */
+  .wm-topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid #1f3d1f;
+    padding: 9px 16px;
+    background: rgba(0,20,0,0.6);
+    position: relative; z-index: 10;
+  }
+  .wm-topbar-left { display: flex; align-items: center; gap: 8px; }
+  .wm-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+  .wm-dot-r { background: #ff4f4f; box-shadow: 0 0 5px #ff4f4f; }
+  .wm-dot-y { background: #f5c518; box-shadow: 0 0 5px #f5c518; }
+  .wm-dot-g { background: #4bff72; box-shadow: 0 0 5px #4bff72; }
+  .wm-title {
+    margin-left: 8px;
+    font-size: 11px; letter-spacing: .22em;
+    color: #3a6b3a; text-transform: uppercase;
+  }
+  .wm-close-btn {
+    background: transparent;
+    border: 1px solid #3a1a1a;
+    color: #8a3a3a;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px; padding: 2px 9px; cursor: pointer;
+    letter-spacing: .15em; transition: all .15s;
+  }
+  .wm-close-btn:hover { background: #3a1a1a; color: #ff6b6b; }
+
+  /* body */
+  .wm-body { position: relative; z-index: 10; padding: 18px 20px; }
+
+  .wm-sec-label {
+    font-size: 10px; letter-spacing: .28em; color: #2d5a2d;
+    text-transform: uppercase; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .wm-sec-label::after { content: ''; flex: 1; height: 1px; background: #162616; }
+
+  /* ── Contact ── */
+  .wm-contact-row {
+    display: flex; align-items: flex-start; gap: 0;
+    border-bottom: 1px dashed #162616;
+    padding: 10px 0;
+  }
+  .wm-contact-row:first-child { border-top: 1px dashed #162616; }
+  .wm-contact-key {
+    font-size: 10px; letter-spacing: .18em; min-width: 96px;
+    text-transform: uppercase; padding-top: 1px;
+  }
+  .wm-contact-val {
+    font-size: 12px; color: #a8ff78; word-break: break-all;
+    text-decoration: none; transition: color .15s;
+  }
+  .wm-contact-val:hover { color: #c8ffb0; }
+  .wm-contact-arrow { font-size: 10px; color: #1f3d1f; margin-right: 8px; flex-shrink: 0; padding-top: 2px; }
+
+  /* ── Skills ── */
+  .wm-skill-row { margin-bottom: 12px; }
+  .wm-skill-header {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: #6aaa6a; letter-spacing: .08em;
+    margin-bottom: 5px;
+  }
+  .wm-skill-pct { color: #4bff72; font-size: 10px; }
+  .wm-skill-bg {
+    height: 5px; background: #0d1a0d;
+    border: 1px solid #1a2f1a; overflow: hidden;
+  }
+  .wm-skill-fill {
+    height: 100%;
+    background: #4bff72;
+    box-shadow: 0 0 8px rgba(75,255,114,.45);
+  }
+
+  /* status badge */
+  .wm-status {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10px; letter-spacing: .15em; color: #4bff72;
+    border: 1px solid #1f3d1f; padding: 2px 8px; margin-top: 14px;
+  }
+  .wm-pulse {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: #4bff72; box-shadow: 0 0 6px #4bff72;
+    animation: wm-pulse 2s ease-in-out infinite;
+  }
+  @keyframes wm-pulse {
+    0%,100% { box-shadow: 0 0 4px #4bff72; opacity: 1; }
+    50%      { box-shadow: 0 0 10px #4bff72; opacity: .55; }
+  }
+
+  .wm-footer {
+    font-size: 10px; color: #1f3a1f; letter-spacing: .12em;
+    border-top: 1px solid #162616; padding-top: 10px; margin-top: 14px;
+    display: flex; justify-content: space-between;
+  }
+`;
+
+function InjectStyles() {
+  return <style dangerouslySetInnerHTML={{ __html: STYLES }} />;
+}
+
+/* ── Panel shell ──────────────────────────────────────── */
+function Panel({ title, onClose, children, maxWidth }) {
   return (
-    <div className="space-y-4 font-mono text-sm text-[#7abf7a]">
-      <p className="text-[11px] uppercase tracking-[0.2em] text-[#67e8f9]">Communication Channels</p>
-      <div className="space-y-2 rounded border border-[#1a2f1a] bg-[rgba(0,18,0,0.55)] p-3">
-        <p>
-          <span className="mr-2 text-[#93c5fd]">EMAIL //</span>
-          <a className="break-all text-[#a8ff78] underline decoration-[#2d5a2d] underline-offset-2 hover:text-[#c8ffb0]" href={`mailto:${profile.email}`}>
-            {profile.email}
-          </a>
-        </p>
-        <p>
-          <span className="mr-2 text-[#fcd34d]">GITHUB //</span>
-          <a
-            className="break-all text-[#a8ff78] underline decoration-[#2d5a2d] underline-offset-2 hover:text-[#c8ffb0]"
-            href={profile.github}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {profile.github}
-          </a>
-        </p>
-        <p>
-          <span className="mr-2 text-[#c084fc]">LINKEDIN //</span>
-          <a
-            className="break-all text-[#a8ff78] underline decoration-[#2d5a2d] underline-offset-2 hover:text-[#c8ffb0]"
-            href={profile.linkedin}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {profile.linkedin}
-          </a>
-        </p>
+    <div className="wm-panel" style={maxWidth ? { maxWidth } : {}}>
+      <div className="wm-scanlines" />
+      <div className="wm-grid" />
+      <div className="wm-corner wm-corner-tl" />
+      <div className="wm-corner wm-corner-tr" />
+      <div className="wm-corner wm-corner-bl" />
+      <div className="wm-corner wm-corner-br" />
+
+      <div className="wm-topbar">
+        <div className="wm-topbar-left">
+          <span className="wm-dot wm-dot-r" />
+          <span className="wm-dot wm-dot-y" />
+          <span className="wm-dot wm-dot-g" />
+          <span className="wm-title">sys://{title}.module</span>
+        </div>
+        <button className="wm-close-btn" type="button" onClick={onClose} aria-label="Close window">
+          [ ESC ]
+        </button>
       </div>
+
+      <div className="wm-body">{children}</div>
     </div>
   );
 }
 
-function SkillsWindow({ skills }) {
+/* ── glitch entrance / exit variants ─────────────────── */
+const panelVariants = {
+  initial: { opacity: 0, clipPath: 'inset(100% 0 0 0)', skewX: -2 },
+  animate: { opacity: 1, clipPath: 'inset(0% 0 0 0)', skewX: 0 },
+  exit:    { opacity: 0, clipPath: 'inset(0 0 100% 0)', skewX: 2 },
+};
+const panelTransition = { duration: 0.46, ease: 'easeOut' };
+
+/* ── Contact window ───────────────────────────────────── */
+function ContactWindow({ profile, onClose }) {
+  const channels = [
+    { key: 'EMAIL //',    color: '#93c5fd', href: `mailto:${profile.email}`,  label: profile.email },
+    { key: 'GITHUB //',   color: '#fcd34d', href: profile.github,             label: profile.github },
+    { key: 'LINKEDIN //', color: '#c084fc', href: profile.linkedin,           label: profile.linkedin },
+  ].filter((c) => Boolean(c.label));
+
   return (
-    <div className="space-y-4 font-mono text-sm text-[#7abf7a]">
-      <p className="text-[11px] uppercase tracking-[0.2em] text-[#67e8f9]">Skill Matrix</p>
-      {(skills.bars || []).map((skill, index) => (
-        <div key={skill.name} className="space-y-1.5">
-          <div className="flex justify-between text-[#6aaa6a]">
+    <Panel title="contact" onClose={onClose}>
+      <div className="wm-sec-label">// comm channels</div>
+      {channels.map((c) => (
+        <div className="wm-contact-row" key={c.key}>
+          <span className="wm-contact-arrow">&gt;</span>
+          <span className="wm-contact-key" style={{ color: c.color }}>{c.key}</span>
+          <a className="wm-contact-val" href={c.href} target="_blank" rel="noreferrer">
+            {c.label}
+          </a>
+        </div>
+      ))}
+      <div className="wm-status">
+        <span className="wm-pulse" />
+        CHANNELS ONLINE
+      </div>
+      <div className="wm-footer">
+        <span>contact.v2 // cli-portfolio</span>
+        <span>{channels.length} channels active</span>
+      </div>
+    </Panel>
+  );
+}
+
+/* ── Skills window ────────────────────────────────────── */
+function SkillsWindow({ skills, onClose }) {
+  const bars = skills?.bars || [];
+  return (
+    <Panel title="skills" onClose={onClose}>
+      <div className="wm-sec-label">// skill matrix</div>
+      {bars.map((skill, i) => (
+        <div className="wm-skill-row" key={skill.name}>
+          <div className="wm-skill-header">
             <span>{skill.name.toUpperCase()}</span>
-            <span className="text-[#fcd34d]">{skill.value}%</span>
+            <span className="wm-skill-pct">{skill.value}%</span>
           </div>
-          <div className="h-2 overflow-hidden rounded-sm border border-[#1a2f1a] bg-[#0d1a0d]">
+          <div className="wm-skill-bg">
             <Motion.div
-              className="h-full bg-gradient-to-r from-[#4bff72] via-[#67e8f9] to-[#4bff72] shadow-[0_0_10px_rgba(75,255,114,0.45)]"
+              className="wm-skill-fill"
               initial={{ width: 0 }}
               animate={{ width: `${skill.value}%` }}
-              transition={{ duration: 0.7, delay: index * 0.08, ease: 'easeOut' }}
+              transition={{ duration: 0.75, delay: 0.1 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
             />
           </div>
         </div>
       ))}
-    </div>
+      <div className="wm-footer">
+        <span>skills.v2 // cli-portfolio</span>
+        <span>{bars.length} entries loaded</span>
+      </div>
+    </Panel>
   );
 }
 
+/* ── WindowManager ────────────────────────────────────── */
 export default function WindowManager({ activeWindow, onClose, profile, skills }) {
-  const isAboutOpen = activeWindow === 'about';
+  const isAbout = activeWindow === 'about';
   const overlayRef = useRef(null);
 
   useEffect(() => {
-    if (!activeWindow) return undefined;
-
-    const handleEscape = (event) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
-    };
-
-    window.addEventListener('keydown', handleEscape);
-    return () => {
-      window.removeEventListener('keydown', handleEscape);
-    };
+    if (!activeWindow) return;
+    const handler = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
   }, [activeWindow, onClose]);
 
   return createPortal(
-    <AnimatePresence>
-      {activeWindow && (
-        <Motion.div
-          ref={overlayRef}
-          className={`fixed inset-0 z-[9999] ${isAboutOpen ? 'bg-black/30 backdrop-blur-md' : 'bg-black/35'}`}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 9999,
-            backgroundColor: isAboutOpen ? 'rgba(0, 0, 0, 0.30)' : 'rgba(0, 0, 0, 0.35)',
-            backdropFilter: isAboutOpen ? 'blur(14px)' : 'none',
-          }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onMouseDown={onClose}
-        >
-          {activeWindow === 'about' ? (
-            <div className="absolute inset-0 flex items-center justify-center p-3 sm:p-4 lg:p-6">
+    <>
+      <InjectStyles />
+      <AnimatePresence>
+        {activeWindow && (
+          <Motion.div
+            ref={overlayRef}
+            className={`wm-overlay ${isAbout ? 'wm-overlay-about' : 'wm-overlay-panel'}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onMouseDown={onClose}
+          >
+            {isAbout ? (
+              /* ── About: full HologramProfile ── */
               <Motion.div
-                className="relative z-20 mx-auto max-h-[90vh] w-[min(94vw,72rem)] overflow-y-auto"
-                initial={{ opacity: 0, clipPath: 'inset(100% 0 0 0)', skewX: -2 }}
-                animate={{ opacity: 1, clipPath: 'inset(0% 0 0 0)', skewX: 0 }}
-                exit={{ opacity: 0, clipPath: 'inset(0 0 100% 0)', skewX: 2 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
+                style={{
+                  position: 'relative', zIndex: 20,
+                  width: 'min(94vw, 72rem)',
+                  maxHeight: '90vh', overflowY: 'auto',
+                }}
+                variants={panelVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={panelTransition}
                 drag
                 dragConstraints={overlayRef}
                 dragMomentum={false}
                 dragElastic={0.08}
-                onMouseDown={(event) => event.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
               >
                 <HologramProfile profile={profile} onClose={onClose} />
               </Motion.div>
-            </div>
-          ) : (
-            <div className="absolute inset-0 grid place-items-center p-4">
+            ) : (
+              /* ── Contact / Skills panels ── */
               <Motion.div
-                className="relative isolate z-10 w-full max-w-lg overflow-hidden rounded-2xl border border-cyan-100/35 bg-slate-950/85 text-[#a8ff78] backdrop-blur-xl hologram-panel hologram-dossier shadow-[0_0_36px_rgba(34,211,238,0.3),0_0_110px_rgba(14,165,233,0.18),inset_0_0_44px_rgba(34,211,238,0.1)]"
-                initial={{ opacity: 0, clipPath: 'inset(100% 0 0 0)', skewX: -2 }}
-                animate={{ opacity: 1, clipPath: 'inset(0% 0 0 0)', skewX: 0 }}
-                exit={{ opacity: 0, clipPath: 'inset(0 0 100% 0)', skewX: 2 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
+                style={{ position: 'relative', zIndex: 20, width: '100%', maxWidth: 480 }}
+                variants={panelVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={panelTransition}
                 drag
                 dragConstraints={overlayRef}
                 dragMomentum={false}
                 dragElastic={0.08}
-                onMouseDown={(event) => event.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
               >
-                <Motion.div
-                  className="pointer-events-none absolute left-0 right-0 top-0 h-[3px] bg-gradient-to-r from-transparent via-cyan-300/90 to-transparent"
-                  initial={{ y: -8, opacity: 0.7 }}
-                  animate={{ y: '110%', opacity: [0.3, 1, 0.25] }}
-                  transition={{ duration: 0.9, ease: 'easeInOut', delay: 0.1 }}
-                />
-                <Motion.div
-                  className="pointer-events-none absolute inset-0"
-                  initial={{ opacity: 0.45 }}
-                  animate={{ opacity: [0.4, 0.2, 0.15], x: [0, 2, -1, 0] }}
-                  transition={{ duration: 0.38, delay: 0.1, times: [0, 0.4, 0.8, 1] }}
-                  style={{ background: 'linear-gradient(90deg, rgba(56, 189, 248, 0.16), transparent 40%, rgba(14, 165, 233, 0.1))' }}
-                />
-                <div className="hologram-scanlines pointer-events-none absolute inset-0 opacity-40" />
-                <div className="hologram-grid pointer-events-none absolute inset-0 opacity-35" />
-                <div className="hologram-noise pointer-events-none absolute inset-0 opacity-[0.12]" />
-
-                <div className="relative z-10 flex items-center justify-between border-b border-cyan-200/20 bg-black/35 px-4 py-3 font-mono">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-[#ff4f4f] shadow-[0_0_6px_#ff4f4f]" />
-                    <span className="h-2 w-2 rounded-full bg-[#f5c518] shadow-[0_0_6px_#f5c518]" />
-                    <span className="h-2 w-2 rounded-full bg-[#4bff72] shadow-[0_0_6px_#4bff72]" />
-                    <h2 className="ml-2 text-[11px] uppercase tracking-[0.2em] text-[#67e8f9]">sys://{activeWindow}.module</h2>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={onClose}
-                    className="grid h-7 w-7 place-items-center rounded-full border border-[#3a1a1a] bg-[#3a1a1a]/70 text-[#ff6b6b] transition hover:bg-[#4a1f1f] hover:text-[#ff8b8b]"
-                    aria-label="Close window"
-                  >
-                    x
-                  </button>
-                </div>
-
-                <div className="relative z-10 p-4 sm:p-5">
-                  {activeWindow === 'contact' && <ContactWindow profile={profile} />}
-                  {activeWindow === 'skills' && <SkillsWindow skills={skills} />}
-                </div>
+                {activeWindow === 'contact' && (
+                  <ContactWindow profile={profile} onClose={onClose} />
+                )}
+                {activeWindow === 'skills' && (
+                  <SkillsWindow skills={skills} onClose={onClose} />
+                )}
               </Motion.div>
-            </div>
-          )}
-        </Motion.div>
-      )}
-    </AnimatePresence>,
+            )}
+          </Motion.div>
+        )}
+      </AnimatePresence>
+    </>,
     document.body
   );
 }

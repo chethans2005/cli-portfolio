@@ -35,13 +35,13 @@ export default function TerminalWindow({ onOpenWindow }) {
 
           {/* Window Title */}
           <div className="pointer-events-none absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center space-x-2">
-            <span className="font-mono text-sm font-bold tracking-[0.18em] text-[#b7ff7c]">
-              neko.OS
-            </span>
+            
             <div className="h-2 w-2 rounded-full bg-[#4bff72] animate-pulse shadow-[0_0_10px_rgba(75,255,114,0.8)]" />
           </div>
-
-          {/* Empty space for balance */}
+          <span className="font-mono text-sm font-bold tracking-[0.18em] text-[#b7ff7c]">
+          neko.OS
+              
+            </span>
           <div className="w-20" aria-hidden="true" />
         </div>
 
