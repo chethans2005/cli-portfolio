@@ -38,6 +38,7 @@ export class CommandParser {
       'pwd',
       'echo',
       'neofetch',
+      'exit'
     ];
   }
 
@@ -67,6 +68,7 @@ export class CommandParser {
       pwd: () => this.pwd(),
       echo: () => this.echo(args.join(' ')),
       neofetch: () => this.neofetch(),
+      exit: () => this.exit(),
     };
 
     if (commands[cmd]) {
@@ -80,19 +82,20 @@ export class CommandParser {
   help() {
     this.output(`${C.BRIGHT_CYAN}${C.BOLD}Available Commands:${C.RESET}
 
-  ${C.BRIGHT_GREEN}help${C.RESET}        - Show this help message
-  ${C.BRIGHT_YELLOW}about${C.RESET}       - Learn more about me
-  ${C.BRIGHT_MAGENTA}skills${C.RESET}      - View my technical skills
-  ${C.BLUE}projects${C.RESET}    - Browse my projects
-  ${C.CYAN}contact${C.RESET}     - Get in touch
+  ${C.GREEN}help${C.RESET}        - Show this help message
   ${C.GREEN}ls${C.RESET}          - List directory contents
   ${C.GREEN}cd${C.RESET} [dir]    - Change directory
   ${C.GREEN}pwd${C.RESET}         - Print working directory
-  ${C.BRIGHT_GREEN}run${C.RESET} [proj]  - Run a project demo
+  ${C.GREEN}whoami${C.RESET}      - Display current user
+  ${C.BRIGHT_MAGENTA}about${C.RESET}       - Learn more about me
+  ${C.BRIGHT_MAGENTA}skills${C.RESET}      - View my technical skills
+  ${C.BRIGHT_MAGENTA}contact${C.RESET}     - Get in touch
+  ${C.BLUE}projects${C.RESET}    - Browse my projects
+  ${C.BRIGHT_CYAN}run${C.RESET} [proj]  - Run a project demo
   ${C.BRIGHT_CYAN}github${C.RESET} [pr] - Open project on GitHub
-  ${C.YELLOW}clear${C.RESET}       - Clear terminal
-  ${C.MAGENTA}whoami${C.RESET}      - Display current user
   ${C.BRIGHT_MAGENTA}neofetch${C.RESET}    - System information
+  ${C.YELLOW}clear${C.RESET}       - Clear terminal
+  ${C.RED}exit${C.RESET}          - Exit the terminal
 
 ${C.BRIGHT_YELLOW}Pro tip:${C.RESET} Use ${C.CYAN}cd projects${C.RESET} then ${C.BRIGHT_CYAN}ls${C.RESET} to explore my work.`);
   }
@@ -227,15 +230,25 @@ ${C.BRIGHT_YELLOW}Pro tip:${C.RESET} Use ${C.CYAN}cd projects${C.RESET} then ${C
   neofetch() {
     this.output(`${C.BRIGHT_CYAN}
     _____         ${C.BRIGHT_GREEN}${profileData.username}@neko${C.RESET}
-   /  __ \        ${C.CYAN}-------------------${C.RESET}
+   /  __ \\       ${C.CYAN}-------------------${C.RESET}
    | |  | |       ${C.BRIGHT_YELLOW}OS:${C.RESET} neko.OS v1.0.0
    | |  | |       ${C.BRIGHT_MAGENTA}Kernel:${C.RESET} JavaScript
    | |__| |       ${C.BRIGHT_CYAN}Uptime:${C.RESET} ${Math.floor(performance.now() / 1000)}s
-   \_____/        ${C.GREEN}Shell:${C.RESET} xterm.js
+   \\_____/        ${C.GREEN}Shell:${C.RESET} xterm.js
                   ${C.BLUE}Resolution:${C.RESET} ${window.innerWidth}x${window.innerHeight}
    neko.OS        ${C.YELLOW}Terminal:${C.RESET} NekoTerminal
                   ${C.MAGENTA}Theme:${C.RESET} Neon Forest${C.RESET}
 `);
+  }
+
+  exit(){
+    this.output(`${C.YELLOW}Shutting down neko.OS...${C.RESET}`);
+    window.setTimeout(() => {
+      this.output(`${C.RED}Goodbye!${C.RESET}`);
+      window.setTimeout(() => {
+        window.close();
+      }, 2000);
+    }, 1200);
   }
 
   getProject(projectName) {

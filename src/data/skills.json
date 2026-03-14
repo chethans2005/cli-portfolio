@@ -4,6 +4,7 @@
     { "name": "JavaScript", "value": 80 },
     { "name": "C", "value": 90 },
     { "name": "React", "value": 80 },
-    { "name": "Networking", "value": 80 }
+    { "name": "Networking", "value": 80 },
+    { "name": "Java OOPs", "value": 90 }
   ]
 }
