@@ -42,11 +42,7 @@ export default function TerminalWindow({ onOpenWindow }) {
           </div>
 
           {/* Empty space for balance */}
-          <div className="w-20 flex items-center justify-center">
-            <span className="text-terminal-purple font-mono text-sm font-semibold tracking-wider">
-              DOSSIER
-            </span>
-          </div>
+          <div className="w-20" aria-hidden="true" />
         </div>
 
         {/* Terminal Content */}

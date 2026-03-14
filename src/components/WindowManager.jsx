@@ -62,6 +62,8 @@ function SkillsWindow({ skills }) {
 }
 
 export default function WindowManager({ activeWindow, onClose, profile, skills }) {
+  const isAboutOpen = activeWindow === 'about';
+
   useEffect(() => {
     if (!activeWindow) return undefined;
 
@@ -81,12 +83,13 @@ export default function WindowManager({ activeWindow, onClose, profile, skills }
     <AnimatePresence>
       {activeWindow && (
         <Motion.div
-          className="fixed inset-0 z-[9999] bg-black/35"
+          className={`fixed inset-0 z-[9999] ${isAboutOpen ? 'bg-black/30 backdrop-blur-md' : 'bg-black/35'}`}
           style={{
             position: 'fixed',
             inset: 0,
             zIndex: 9999,
-            backgroundColor: 'rgba(0, 0, 0, 0.35)',
+            backgroundColor: isAboutOpen ? 'rgba(0, 0, 0, 0.30)' : 'rgba(0, 0, 0, 0.35)',
+            backdropFilter: isAboutOpen ? 'blur(14px)' : 'none',
           }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -94,9 +97,9 @@ export default function WindowManager({ activeWindow, onClose, profile, skills }
           onMouseDown={onClose}
         >
           {activeWindow === 'about' ? (
-            <div className="absolute inset-0 grid place-items-center p-4">
+            <div className="absolute inset-0 grid place-items-center p-3 sm:p-4 lg:p-6">
               <Motion.div
-                className="relative z-20 w-full max-w-5xl max-h-[85vh] overflow-y-auto"
+                className="relative z-20 w-full max-w-6xl max-h-[90vh] overflow-y-auto"
                 initial={{ opacity: 0, y: 24, scale: 0.97 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 12, scale: 0.98 }}
