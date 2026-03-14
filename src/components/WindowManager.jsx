@@ -106,10 +106,10 @@ export default function WindowManager({ activeWindow, onClose, profile, skills }
             <div className="absolute inset-0 flex items-center justify-center p-3 sm:p-4 lg:p-6">
               <Motion.div
                 className="relative z-20 mx-auto max-h-[90vh] w-[min(94vw,72rem)] overflow-y-auto"
-                initial={{ opacity: 0, y: 24, scale: 0.97 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 12, scale: 0.98 }}
-                transition={{ duration: 0.28, ease: 'easeOut' }}
+                initial={{ opacity: 0, clipPath: 'inset(100% 0 0 0)', skewX: -2 }}
+                animate={{ opacity: 1, clipPath: 'inset(0% 0 0 0)', skewX: 0 }}
+                exit={{ opacity: 0, clipPath: 'inset(0 0 100% 0)', skewX: 2 }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
                 drag
                 dragConstraints={overlayRef}
                 dragMomentum={false}
@@ -122,20 +122,35 @@ export default function WindowManager({ activeWindow, onClose, profile, skills }
           ) : (
             <div className="absolute inset-0 grid place-items-center p-4">
               <Motion.div
-                className="relative z-10 w-full max-w-lg overflow-hidden rounded-lg border border-[#1a2a1a] bg-[rgba(0,0,0,0.82)] text-[#a8ff78] shadow-[0_0_24px_rgba(75,255,114,0.12),0_0_40px_rgba(56,189,248,0.08)]"
-                initial={{ opacity: 0, y: 28, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 18, scale: 0.98 }}
-                transition={{ duration: 0.24, ease: 'easeOut' }}
+                className="relative isolate z-10 w-full max-w-lg overflow-hidden rounded-2xl border border-cyan-100/35 bg-slate-950/85 text-[#a8ff78] backdrop-blur-xl hologram-panel hologram-dossier shadow-[0_0_36px_rgba(34,211,238,0.3),0_0_110px_rgba(14,165,233,0.18),inset_0_0_44px_rgba(34,211,238,0.1)]"
+                initial={{ opacity: 0, clipPath: 'inset(100% 0 0 0)', skewX: -2 }}
+                animate={{ opacity: 1, clipPath: 'inset(0% 0 0 0)', skewX: 0 }}
+                exit={{ opacity: 0, clipPath: 'inset(0 0 100% 0)', skewX: 2 }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
                 drag
                 dragConstraints={overlayRef}
                 dragMomentum={false}
                 dragElastic={0.08}
                 onMouseDown={(event) => event.stopPropagation()}
               >
-                <div className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_3px,rgba(0,0,0,0.2)_3px,rgba(0,0,0,0.2)_4px)] opacity-60" />
+                <Motion.div
+                  className="pointer-events-none absolute left-0 right-0 top-0 h-[3px] bg-gradient-to-r from-transparent via-cyan-300/90 to-transparent"
+                  initial={{ y: -8, opacity: 0.7 }}
+                  animate={{ y: '110%', opacity: [0.3, 1, 0.25] }}
+                  transition={{ duration: 0.9, ease: 'easeInOut', delay: 0.1 }}
+                />
+                <Motion.div
+                  className="pointer-events-none absolute inset-0"
+                  initial={{ opacity: 0.45 }}
+                  animate={{ opacity: [0.4, 0.2, 0.15], x: [0, 2, -1, 0] }}
+                  transition={{ duration: 0.38, delay: 0.1, times: [0, 0.4, 0.8, 1] }}
+                  style={{ background: 'linear-gradient(90deg, rgba(56, 189, 248, 0.16), transparent 40%, rgba(14, 165, 233, 0.1))' }}
+                />
+                <div className="hologram-scanlines pointer-events-none absolute inset-0 opacity-40" />
+                <div className="hologram-grid pointer-events-none absolute inset-0 opacity-35" />
+                <div className="hologram-noise pointer-events-none absolute inset-0 opacity-[0.12]" />
 
-                <div className="relative z-10 flex items-center justify-between border-b border-[#1f3d1f] bg-[linear-gradient(90deg,rgba(0,30,0,0.65),rgba(3,24,35,0.45),rgba(35,24,3,0.28))] px-4 py-3 font-mono">
+                <div className="relative z-10 flex items-center justify-between border-b border-cyan-200/20 bg-black/35 px-4 py-3 font-mono">
                   <div className="flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-[#ff4f4f] shadow-[0_0_6px_#ff4f4f]" />
                     <span className="h-2 w-2 rounded-full bg-[#f5c518] shadow-[0_0_6px_#f5c518]" />
@@ -152,7 +167,7 @@ export default function WindowManager({ activeWindow, onClose, profile, skills }
                   </button>
                 </div>
 
-                <div className="relative z-10 p-4">
+                <div className="relative z-10 p-4 sm:p-5">
                   {activeWindow === 'contact' && <ContactWindow profile={profile} />}
                   {activeWindow === 'skills' && <SkillsWindow skills={skills} />}
                 </div>
