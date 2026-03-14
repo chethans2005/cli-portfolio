@@ -2,137 +2,130 @@ import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-function randomRange(min, max) {
-  return min + Math.random() * (max - min);
+/* ── shared star texture (created once) ──────────────────── */
+let _sharedTexture = null;
+function getStarTexture() {
+  if (_sharedTexture) return _sharedTexture;
+  const canvas = document.createElement('canvas');
+  canvas.width = 64;
+  canvas.height = 64;
+  const ctx = canvas.getContext('2d');
+  const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  g.addColorStop(0,   'rgba(255,255,255,1)');
+  g.addColorStop(0.5, 'rgba(255,255,255,0.9)');
+  g.addColorStop(1,   'rgba(255,255,255,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 64, 64);
+  _sharedTexture = new THREE.CanvasTexture(canvas);
+  return _sharedTexture;
 }
 
-function createDriftData(count, spread, speedRange, brightnessRange) {
-  const positions = new Float32Array(count * 3);
-  const velocities = new Float32Array(count * 3);
-  const colors = new Float32Array(count * 3);
-  const targetAngleDeg = 30;
+/* ── build particle data ──────────────────────────────────── */
+function buildParticles(count, spread, speed, color) {
+  const positions  = new Float32Array(count * 3);
+  const colors     = new Float32Array(count * 3);
+
+  /* drift direction: upper-right at ~30°, consistent across all particles */
+  const angle = THREE.MathUtils.degToRad(30);
+  const dx = Math.cos(angle) * speed;
+  const dy = Math.sin(angle) * speed;
+
+  const c = new THREE.Color(color);
 
   for (let i = 0; i < count; i++) {
-    const index = i * 3;
+    const i3 = i * 3;
+    /* scatter randomly across the volume */
+    positions[i3]     = (Math.random() * 2 - 1) * spread;
+    positions[i3 + 1] = (Math.random() * 2 - 1) * spread;
+    positions[i3 + 2] = (Math.random() * 2 - 1) * spread;
 
-    positions[index] = randomRange(-spread, spread);
-    positions[index + 1] = randomRange(-spread, spread);
-    positions[index + 2] = randomRange(-spread, spread);
-
-    const angle = THREE.MathUtils.degToRad(targetAngleDeg + randomRange(-6, 6));
-    const speed = randomRange(speedRange[0] * 0.8, speedRange[0] * 1.2);
-
-    velocities[index] = Math.cos(angle) * speed;
-    velocities[index + 1] = Math.sin(angle) * speed;
-    velocities[index + 2] = randomRange(-speedRange[2] * 0.15, speedRange[2] * 0.15);
-
-    const brightness = randomRange(brightnessRange[0], brightnessRange[1]);
-    colors[index] = brightness;
-    colors[index + 1] = brightness;
-    colors[index + 2] = brightness;
+    /* brightness variation — keep hue, vary luminance */
+    const b = 0.45 + Math.random() * 0.55;
+    colors[i3]     = c.r * b;
+    colors[i3 + 1] = c.g * b;
+    colors[i3 + 2] = c.b * b;
   }
 
-  return { positions, velocities, colors };
+  return { positions, colors, dx, dy };
 }
 
-function DriftLayer({ count, spread, size, speedRange, brightnessRange, opacity }) {
-  const pointsRef = useRef(null);
-  const { positions, velocities, colors } = useMemo(
-    () => createDriftData(count, spread, speedRange, brightnessRange),
-    [count, spread, speedRange, brightnessRange]
+/* ── single drift layer ───────────────────────────────────── */
+function DriftLayer({ count, spread, size, speed, color, opacity }) {
+  const ref = useRef(null);
+
+  const { positions, colors, dx, dy } = useMemo(
+    () => buildParticles(count, spread, speed, color),
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+    [count, spread, speed, color]
   );
-  const circleTexture = useMemo(() => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 64;
-    canvas.height = 64;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      return null;
-    }
 
-    const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-    gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-    gradient.addColorStop(0.6, 'rgba(255, 255, 255, 0.95)');
-    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 64, 64);
-
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.needsUpdate = true;
-    return texture;
-  }, []);
+  const tex = useMemo(getStarTexture, []);
 
   useFrame((_, delta) => {
-    if (!pointsRef.current) {
-      return;
-    }
-
-    const positionAttr = pointsRef.current.geometry.attributes.position;
-    const scaledDelta = delta * 60;
+    if (!ref.current) return;
+    const pos = ref.current.geometry.attributes.position.array;
+    const step = delta * 60;
+    const sdx = dx * step;
+    const sdy = dy * step;
 
     for (let i = 0; i < count; i++) {
-      const index = i * 3;
-      positionAttr.array[index] += velocities[index] * scaledDelta;
-      positionAttr.array[index + 1] += velocities[index + 1] * scaledDelta;
-      positionAttr.array[index + 2] += velocities[index + 2] * scaledDelta;
+      const i3 = i * 3;
+      pos[i3]     += sdx;
+      pos[i3 + 1] += sdy;
 
-      if (positionAttr.array[index] > spread) positionAttr.array[index] = -spread;
-      if (positionAttr.array[index] < -spread) positionAttr.array[index] = spread;
-      if (positionAttr.array[index + 1] > spread) positionAttr.array[index + 1] = -spread;
-      if (positionAttr.array[index + 1] < -spread) positionAttr.array[index + 1] = spread;
-      if (positionAttr.array[index + 2] > spread) positionAttr.array[index + 2] = -spread;
-      if (positionAttr.array[index + 2] < -spread) positionAttr.array[index + 2] = spread;
+      /* wrap — stars that leave one edge re-enter from the opposite side */
+      if (pos[i3]     >  spread) pos[i3]     -= spread * 2;
+      if (pos[i3]     < -spread) pos[i3]     += spread * 2;
+      if (pos[i3 + 1] >  spread) pos[i3 + 1] -= spread * 2;
+      if (pos[i3 + 1] < -spread) pos[i3 + 1] += spread * 2;
     }
 
-    positionAttr.needsUpdate = true;
+    ref.current.geometry.attributes.position.needsUpdate = true;
   });
 
   return (
-    <points ref={pointsRef} frustumCulled={false}>
+    <points ref={ref} frustumCulled={false}>
       <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={count}
-          array={positions}
-          itemSize={3}
-        />
-        <bufferAttribute attach="attributes-color" count={count} array={colors} itemSize={3} />
+        <bufferAttribute attach="attributes-position" count={count} array={positions} itemSize={3} />
+        <bufferAttribute attach="attributes-color"    count={count} array={colors}    itemSize={3} />
       </bufferGeometry>
       <pointsMaterial
         size={size}
-        color="#ffffff"
         vertexColors
-        map={circleTexture}
-        alphaMap={circleTexture}
+        map={tex}
+        alphaMap={tex}
         transparent
         opacity={opacity}
-        alphaTest={0.08}
+        alphaTest={0.06}
         sizeAttenuation
         depthWrite={false}
-        blending={THREE.NormalBlending}
+        blending={THREE.AdditiveBlending}
       />
     </points>
   );
 }
 
+/* ── exported component ───────────────────────────────────── */
 export function StarfieldParticles() {
   return (
     <>
+      {/* background layer — small, dim, slow */}
       <DriftLayer
-        count={1540}
+        count={1400}
         spread={24}
-        size={0.085}
-        speedRange={[0.0252, 0.0248, 0.0242]}
-        brightnessRange={[0.45, 1]}
-        opacity={0.92}
+        size={0.07}
+        speed={0.122}
+        color="#a8ff78"
+        opacity={0.75}
       />
+      {/* foreground layer — larger, brighter, slightly faster */}
       <DriftLayer
-        count={1450}
+        count={600}
         spread={20}
-        size={0.16}
-        speedRange={[0.0285, 0.0278, 0.0268]}
-        brightnessRange={[0.62, 1]}
-        opacity={0.85}
+        size={0.15}
+        speed={0.112}
+        color="#c8ffb0"
+        opacity={0.90}
       />
     </>
   );

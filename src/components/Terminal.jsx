@@ -53,25 +53,25 @@ export default function Terminal({ onOpenWindow }) {
       fontSize: 13,
       theme: {
         background: '#06090f',
-        foreground: '#d7ffd1',
-        cursor: '#67e8f9',
+        foreground: '#eaffea',
+        cursor: '#a5f3fc',
         cursorAccent: '#071007',
-        black: '#03060b',
-        red: '#ff6b6b',
-        green: '#4ade80',
-        yellow: '#f5c518',
-        blue: '#60a5fa',
-        magenta: '#c084fc',
-        cyan: '#67e8f9',
-        white: '#d8ffd2',
-        brightBlack: '#334155',
-        brightRed: '#ff8b8b',
-        brightGreen: '#9aff9f',
-        brightYellow: '#fcd34d',
-        brightBlue: '#93c5fd',
-        brightMagenta: '#e9d5ff',
-        brightCyan: '#a5f3fc',
-        brightWhite: '#efffec',
+        black: '#1a2233',
+        red: '#ff3b3b',
+        green: '#7fff7f',
+        yellow: '#ffe066',
+        blue: '#5fd7ff',
+        magenta: '#ff7fff',
+        cyan: '#76fff9',
+        white: '#ffffff',
+        brightBlack: '#6b7280',
+        brightRed: '#ff4d6d',
+        brightGreen: '#baffc9',
+        brightYellow: '#fff685',
+        brightBlue: '#aeefff',
+        brightMagenta: '#ffd6fa',
+        brightCyan: '#b9fff9',
+        brightWhite: '#f8fff8',
       },
       allowTransparency: true,
     });
@@ -147,7 +147,7 @@ export default function Terminal({ onOpenWindow }) {
         // Show banner and welcome
         schedule(() => {
           ASCII_BANNER.split('\n').forEach((line) => {
-            term.writeln(`\x1b[96m${line}\x1b[0m`);
+            term.writeln(`\x1b[36m${line}\x1b[0m`);
           });
           term.writeln(WELCOME_MESSAGE);
           isBootedRef.current = true;
