@@ -25,7 +25,6 @@ function buildParticles(count, spread, speed, color) {
   const positions  = new Float32Array(count * 3);
   const colors     = new Float32Array(count * 3);
 
-  /* drift direction: upper-right at ~30°, consistent across all particles */
   const angle = THREE.MathUtils.degToRad(30);
   const dx = Math.cos(angle) * speed;
   const dy = Math.sin(angle) * speed;
@@ -34,13 +33,12 @@ function buildParticles(count, spread, speed, color) {
 
   for (let i = 0; i < count; i++) {
     const i3 = i * 3;
-    /* scatter randomly across the volume */
     positions[i3]     = (Math.random() * 2 - 1) * spread;
     positions[i3 + 1] = (Math.random() * 2 - 1) * spread;
     positions[i3 + 2] = (Math.random() * 2 - 1) * spread;
 
-    /* brightness variation — keep hue, vary luminance */
-    const b = 0.45 + Math.random() * 0.55;
+    /* raised brightness floor: 0.70–1.0 instead of 0.45–1.0 */
+    const b = 0.70 + Math.random() * 0.30;
     colors[i3]     = c.r * b;
     colors[i3 + 1] = c.g * b;
     colors[i3 + 2] = c.b * b;
@@ -73,7 +71,6 @@ function DriftLayer({ count, spread, size, speed, color, opacity }) {
       pos[i3]     += sdx;
       pos[i3 + 1] += sdy;
 
-      /* wrap — stars that leave one edge re-enter from the opposite side */
       if (pos[i3]     >  spread) pos[i3]     -= spread * 2;
       if (pos[i3]     < -spread) pos[i3]     += spread * 2;
       if (pos[i3 + 1] >  spread) pos[i3 + 1] -= spread * 2;
@@ -96,7 +93,7 @@ function DriftLayer({ count, spread, size, speed, color, opacity }) {
         alphaMap={tex}
         transparent
         opacity={opacity}
-        alphaTest={0.06}
+        alphaTest={0.03}
         sizeAttenuation
         depthWrite={false}
         blending={THREE.AdditiveBlending}
@@ -109,23 +106,23 @@ function DriftLayer({ count, spread, size, speed, color, opacity }) {
 export function StarfieldParticles() {
   return (
     <>
-      {/* background layer — small, dim, slow */}
+      {/* background layer — small, slow */}
       <DriftLayer
         count={1400}
         spread={24}
-        size={0.07}
+        size={0.10}
         speed={0.122}
-        color="#a8ff78"
-        opacity={0.75}
+        color="#c8ffaa"
+        opacity={0.95}
       />
-      {/* foreground layer — larger, brighter, slightly faster */}
+      {/* foreground layer — larger, brightest */}
       <DriftLayer
         count={600}
         spread={20}
-        size={0.15}
+        size={0.22}
         speed={0.112}
-        color="#c8ffb0"
-        opacity={0.90}
+        color="#e0ffcc"
+        opacity={1.0}
       />
     </>
   );

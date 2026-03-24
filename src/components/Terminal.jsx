@@ -52,26 +52,26 @@ export default function Terminal({ onOpenWindow }) {
       fontFamily: '"Fira Code", Consolas, Monaco, monospace',
       fontSize: 13,
       theme: {
-        background: '#06090f',
-        foreground: '#eaffea',
-        cursor: '#a5f3fc',
+        background: '#060d06',
+        foreground: '#d4ffd4',        // brighter default text
+        cursor: '#7fffff',            // brighter cyan cursor
         cursorAccent: '#071007',
         black: '#1a2233',
-        red: '#ff3b3b',
-        green: '#7fff7f',
-        yellow: '#ffe066',
-        blue: '#5fd7ff',
-        magenta: '#ff7fff',
-        cyan: '#76fff9',
+        red: '#ff5555',               // vivid red
+        green: '#a0ff80',             // much brighter green
+        yellow: '#ffee66',            // brighter yellow
+        blue: '#7fd7ff',              // brighter blue
+        magenta: '#ff88ff',           // brighter magenta
+        cyan: '#00ffee',              // vivid cyan
         white: '#ffffff',
-        brightBlack: '#6b7280',
-        brightRed: '#ff4d6d',
-        brightGreen: '#baffc9',
-        brightYellow: '#fff685',
-        brightBlue: '#aeefff',
-        brightMagenta: '#ffd6fa',
-        brightCyan: '#b9fff9',
-        brightWhite: '#f8fff8',
+        brightBlack: '#7a8a90',       // brighter dim
+        brightRed: '#ff6680',
+        brightGreen: '#ccffcc',       // near-white green
+        brightYellow: '#ffff99',
+        brightBlue: '#c4f0ff',
+        brightMagenta: '#ffddff',
+        brightCyan: '#ccffff',
+        brightWhite: '#ffffff',
       },
       allowTransparency: true,
     });
