@@ -62,8 +62,17 @@ Once the terminal loads, try these commands:
 - `clear` - Clear terminal screen
 
 ### Project Commands
-- `run [project-name]` - Launch project demo (if deployed)
-- `github [project-name]` - Open project repository
+- `projects` - Quick project summary
+- `projects --all` - List all projects
+- `projects --featured` - List featured projects
+- `projects --live` - List live/demo-ready projects
+- `projects --wip` - List planned and in-progress projects
+- `projects --category=<name>` - Filter by category
+- `projects --sort=name|newest|stars` - Sort filtered output
+- `project [project-name]` - Show detailed project information
+- `run [project-name]` - Launch project demo (or fallback to repo)
+- `github [project-name]` - Open project repository (`github` opens profile)
+- `stats` - Show project portfolio metrics
 
 ### System Commands
 - `whoami` - Display current user
@@ -120,13 +129,24 @@ Once the terminal loads, try these commands:
        "id": "project-id",
        "name": "Project Name",
        "description": "Description...",
+            "categories": ["frontend", "tooling"],
        "technologies": ["React", "Node.js"],
-       "github": "https://github.com/...",
+            "highlights": ["Fast UX", "Clean architecture"],
+            "status": "shipped",
+            "featured": true,
+            "year": 2026,
+            "order": 1,
+            "repo": "username/repository",
        "deployed": true,
        "demoUrl": "https://..."
      }
    ]
    ```
+
+    Validate your data after edits:
+    ```bash
+    npm run validate:projects
+    ```
 
 3. **Skills**: Edit `src/data/skills.json`
    ```json

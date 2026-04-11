@@ -1,8 +1,8 @@
-import projectsData from '../data/projects.json';
+import { getProjectCatalog } from '../data/projectCatalog';
 
 export class FileSystem {
   constructor() {
-    const projectChildren = projectsData.reduce((acc, project) => {
+    const projectChildren = getProjectCatalog().reduce((acc, project) => {
       if (project?.name) {
         acc[project.name] = { type: 'dir', children: {} };
       }

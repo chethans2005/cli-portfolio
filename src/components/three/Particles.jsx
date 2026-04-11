@@ -53,11 +53,10 @@ function DriftLayer({ count, spread, size, speed, color, opacity }) {
 
   const { positions, colors, dx, dy } = useMemo(
     () => buildParticles(count, spread, speed, color),
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
     [count, spread, speed, color]
   );
 
-  const tex = useMemo(getStarTexture, []);
+  const tex = useMemo(() => getStarTexture(), []);
 
   useFrame((_, delta) => {
     if (!ref.current) return;

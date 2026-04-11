@@ -1,38 +1,92 @@
-[ 
+[
   {
-    "name": "langbuddy",
-    "repo": "chethans2005/LangBuddy",
-    "deployed": false,
-    "demo": ""
-  },
-  {
-    "name": "neko-matic",
-    "repo": "chethans2005/neko-matic",
-    "deployed": false,
-    "demo": ""
-  },
-  {
+    "id": "neko-ai",
     "name": "neko.ai",
+    "description": "AI-first web experience focused on assistant workflows and polished interaction design.",
+    "technologies": ["React", "Vite", "JavaScript"],
+    "highlights": ["Live deployment", "Interactive UI", "Fast client-side rendering"],
+    "categories": ["ai", "frontend"],
+    "status": "shipped",
+    "featured": true,
+    "year": 2025,
+    "order": 1,
     "repo": "chethans2005/neko.ai",
     "deployed": true,
-    "demo": "https://neko-ai-seven.vercel.app/"
+    "demoUrl": "https://neko-ai-seven.vercel.app/"
   },
   {
-    "name": "cli-portfolio",
-    "repo": "chethans2005/cli-portfolio",
-    "deployed": false,
-    "demo": ""
-  },
-  {
+    "id": "portfolio-official",
     "name": "my-portfolio-official",
+    "description": "Personal portfolio focused on smooth navigation and clear project storytelling.",
+    "technologies": ["React", "Tailwind CSS", "Framer Motion"],
+    "highlights": ["Production deployment", "Responsive layouts", "Animation-first presentation"],
+    "categories": ["frontend", "portfolio"],
+    "status": "shipped",
+    "featured": true,
+    "year": 2025,
+    "order": 2,
     "repo": "chethans2005/my-portfolio-official",
     "deployed": true,
-    "demo": "https://my-portfolio-official-six.vercel.app/"
+    "demoUrl": "https://my-portfolio-official-six.vercel.app/"
   },
   {
+    "id": "cli-portfolio",
+    "name": "cli-portfolio",
+    "description": "Terminal-inspired portfolio with command parsing, custom windows, and immersive visuals.",
+    "technologies": ["React", "xterm.js", "Three.js"],
+    "highlights": ["Custom command parser", "Virtual file system", "3D background"],
+    "categories": ["portfolio", "tooling"],
+    "status": "in-progress",
+    "featured": true,
+    "year": 2026,
+    "order": 3,
+    "repo": "chethans2005/cli-portfolio",
+    "deployed": false,
+    "demoUrl": ""
+  },
+  {
+    "id": "langbuddy",
+    "name": "langbuddy",
+    "description": "Language learning companion focused on guided practice and daily repetition loops.",
+    "technologies": ["JavaScript", "React"],
+    "highlights": ["Practice flows", "Session-based content", "Learning-oriented UX"],
+    "categories": ["education", "ai"],
+    "status": "in-progress",
+    "featured": false,
+    "year": 2025,
+    "order": 4,
+    "repo": "chethans2005/LangBuddy",
+    "deployed": false,
+    "demoUrl": ""
+  },
+  {
+    "id": "neko-matic",
+    "name": "neko-matic",
+    "description": "Automation-focused utility project for simplifying repetitive development tasks.",
+    "technologies": ["Node.js", "JavaScript"],
+    "highlights": ["CLI automation", "Developer productivity", "Reusable scripts"],
+    "categories": ["tooling", "automation"],
+    "status": "planned",
+    "featured": false,
+    "year": 2026,
+    "order": 5,
+    "repo": "chethans2005/neko-matic",
+    "deployed": false,
+    "demoUrl": ""
+  },
+  {
+    "id": "messhy-ai",
     "name": "messhy.ai",
+    "description": "Exploratory AI project aimed at real-time conversational or content-generation workflows.",
+    "technologies": ["Python", "FastAPI", "React"],
+    "highlights": ["AI experimentation", "Service architecture", "Rapid prototyping"],
+    "categories": ["ai", "backend"],
+    "status": "planned",
+    "featured": false,
+    "year": 2026,
+    "order": 6,
     "repo": "chethans2005/messhy.ai",
     "deployed": false,
-    "demo": ""
+    "demoUrl": ""
   }
 ]
