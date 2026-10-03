@@ -72,10 +72,10 @@ export function getProjectCatalogSummary() {
   const total = projectCatalog.length;
   const live = projectCatalog.filter((project) => project.deployed && project.demoUrl).length;
   const featured = projectCatalog.filter((project) => project.featured).length;
-  const inProgress = projectCatalog.filter((project) => project.status === 'in-progress').length;
+  const completed = projectCatalog.filter((project) => project.status === 'completed').length;
   const planned = projectCatalog.filter((project) => project.status === 'planned').length;
 
-  return { total, live, featured, inProgress, planned };
+  return { total, live, featured, completed, planned };
 }
 
 function scoreProjectMatch(project, normalizedQuery) {

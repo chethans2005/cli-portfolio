@@ -240,7 +240,7 @@ ${C.BRIGHT_YELLOW}Project Flags:${C.RESET}
     this.output(`${C.GREEN}Total projects:${C.RESET} ${summary.total}`);
     this.output(`${C.GREEN}Live demos:${C.RESET} ${summary.live}`);
     this.output(`${C.GREEN}Featured:${C.RESET} ${summary.featured}`);
-    this.output(`${C.GREEN}In progress:${C.RESET} ${summary.inProgress}`);
+    this.output(`${C.GREEN}Completed:${C.RESET} ${summary.completed}`);
     this.output(`${C.GREEN}Planned:${C.RESET} ${summary.planned}`);
   }
 
