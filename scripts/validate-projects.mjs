@@ -40,8 +40,8 @@ for (let i = 0; i < projects.length; i += 1) {
     seenNames.add(p.name.toLowerCase());
   }
 
-  if (!p.repo && !p.githubUrl) {
-    errors.push(`${indexLabel} must define either repo or githubUrl.`);
+  if (!p.repo && !p.githubUrl && !p.private) {
+    errors.push(`${indexLabel} must define either repo or githubUrl, unless it is marked private.`);
   }
 
   if (p.status && !['planned', 'in-progress', 'shipped', 'archived'].includes(p.status)) {

@@ -56,7 +56,7 @@ export const projectCatalog = rawProjects
   .filter((project) => project.name);
 
 export const projectCatalogErrors = projectCatalog
-  .filter((project) => !project.repoUrl)
+  .filter((project) => !project.repoUrl && !project.private)
   .map((project) => `Project '${project.name}' is missing a repository URL.`);
 
 export function getProjectCatalog() {
