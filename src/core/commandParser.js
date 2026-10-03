@@ -181,7 +181,6 @@ ${C.BRIGHT_YELLOW}Project Flags:${C.RESET}
       this.output(`${C.BLUE}Project catalog:${C.RESET} ${summary.total} total | ${summary.live} live | ${summary.featured} featured`);
       this.output(`${C.CYAN}Tip:${C.RESET} projects --featured | projects --live | project <name>`);
       this.output('');
-      filtered = filtered.slice(0, 4);
     }
 
     if (filtered.length === 0) {
