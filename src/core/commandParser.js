@@ -499,6 +499,7 @@ ${C.BRIGHT_YELLOW}Project Flags:${C.RESET}
   formatStatus(status) {
     if (status === 'shipped') return `${C.BRIGHT_GREEN}[LIVE]${C.RESET}`;
     if (status === 'in-progress') return `${C.BRIGHT_YELLOW}[WIP ]${C.RESET}`;
+    if (status === 'completed') return `${C.BRIGHT_CYAN}[DONE]${C.RESET}`;
     if (status === 'planned') return `${C.BLUE}[PLAN]${C.RESET}`;
     if (status === 'archived') return `${C.MAGENTA}[ARCH]${C.RESET}`;
     return `${C.CYAN}[INFO]${C.RESET}`;

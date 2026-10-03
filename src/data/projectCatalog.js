@@ -3,8 +3,9 @@ import rawProjects from './projects.json';
 const STATUS_ORDER = {
   planned: 0,
   'in-progress': 1,
-  shipped: 2,
-  archived: 3,
+  completed: 2,
+  shipped: 3,
+  archived: 4,
 };
 
 function toSlug(text) {

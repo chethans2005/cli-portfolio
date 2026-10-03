@@ -44,7 +44,7 @@ for (let i = 0; i < projects.length; i += 1) {
     errors.push(`${indexLabel} must define either repo or githubUrl, unless it is marked private.`);
   }
 
-  if (p.status && !['planned', 'in-progress', 'shipped', 'archived'].includes(p.status)) {
+  if (p.status && !['planned', 'in-progress', 'completed', 'shipped', 'archived'].includes(p.status)) {
     errors.push(`${indexLabel}.status '${p.status}' is invalid.`);
   }
 
